@@ -1,0 +1,620 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  RESTRICTED
+  SUSPENDED
+  BANNED
+}
+
+enum VerificationType {
+  BASIC
+  REAL_NAME
+  SKILL
+  OFFICIAL
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TagType {
+  SKILL
+  INTEREST
+  LISTING
+  SCENARIO
+}
+
+enum TagStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserTagRelationType {
+  SKILL
+  INTEREST
+}
+
+enum ListingType {
+  TASK
+  EXCHANGE
+  BUDDY
+}
+
+enum ServiceMode {
+  ONLINE
+  OFFLINE
+  BOTH
+}
+
+enum BudgetType {
+  FIXED
+  RANGE
+  NEGOTIABLE
+  FREE_EXCHANGE
+}
+
+enum VisibilityType {
+  PUBLIC
+  CITY_ONLY
+  PRIVATE
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  MATCHED
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+  REJECTED
+}
+
+enum AuditStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum ChatType {
+  LISTING_CONSULT
+  ORDER_CHAT
+  SYSTEM
+}
+
+enum ChatStatus {
+  ACTIVE
+  CLOSED
+}
+
+enum ChatMemberRole {
+  PUBLISHER
+  APPLICANT
+  BUYER
+  SELLER
+  SYSTEM
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM_CARD
+  ACTION_CARD
+}
+
+enum MessageStatus {
+  SENT
+  RECALLED
+  DELETED
+}
+
+enum OrderType {
+  TASK_ORDER
+  EXCHANGE_CONFIRMATION
+}
+
+enum EscrowStatus {
+  NOT_REQUIRED
+  PENDING_PAYMENT
+  PAID
+  FROZEN
+  RELEASED
+  REFUNDING
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PENDING_ACCEPT
+  IN_PROGRESS
+  PENDING_CONFIRMATION
+  COMPLETED
+  REFUND_REQUESTED
+  REFUNDED
+  ARBITRATING
+  CANCELLED
+}
+
+enum OrderEventType {
+  CREATED
+  PAID
+  ACCEPTED
+  STARTED
+  DELIVERED
+  CONFIRMED
+  REFUND_REQUESTED
+  REFUNDED
+  CANCELLED
+  ARBITRATION_STARTED
+  ARBITRATION_CLOSED
+}
+
+enum PaymentChannel {
+  WECHAT_PAY
+  ALIPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CLOSED
+  REFUNDED
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum ReviewStatus {
+  VISIBLE
+  HIDDEN
+}
+
+enum ReportTargetType {
+  USER
+  LISTING
+  MESSAGE
+  ORDER
+}
+
+enum ReportStatus {
+  PENDING
+  PROCESSING
+  RESOLVED
+  REJECTED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  OPERATOR
+}
+
+enum AdminStatus {
+  ACTIVE
+  DISABLED
+}
+
+model User {
+  id                     String             @id @default(cuid())
+  phone                  String             @unique
+  phoneCountryCode       String             @default("+86")
+  passwordHash           String?
+  status                 UserStatus         @default(ACTIVE)
+  nickname               String
+  avatarUrl              String?
+  gender                 String?
+  birthday               DateTime?
+  cityCode               String?
+  bio                    String?
+  creditScore            Int                @default(100)
+  level                  Int                @default(1)
+  ratingAvg              Decimal?           @db.Decimal(3, 2)
+  ratingCount            Int                @default(0)
+  completedTaskCount     Int                @default(0)
+  completedExchangeCount Int                @default(0)
+  lastLoginAt            DateTime?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  deletedAt              DateTime?
+
+  profile                UserProfile?
+  verifications          UserVerification[]
+  userTags               UserTagRelation[]
+  publishedListings      Listing[]          @relation("ListingPublisher")
+  applications           Application[]
+  sentMessages           Message[]
+  boughtOrders           Order[]            @relation("OrderBuyer")
+  soldOrders             Order[]            @relation("OrderSeller")
+  writtenReviews         Review[]           @relation("ReviewFromUser")
+  receivedReviews        Review[]           @relation("ReviewToUser")
+  reports                Report[]
+  favorites              Favorite[]
+  chatMembers            ChatMember[]
+}
+
+model UserProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  realName              String?
+  signature             String?
+  serviceCityCode       String?
+  skillSummary          String?
+  interestSummary       String?
+  showGender            Boolean  @default(false)
+  showBirthday          Boolean  @default(false)
+  profileCompletionRate Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User     @relation(fields: [userId], references: [id])
+}
+
+model UserVerification {
+  id                 String             @id @default(cuid())
+  userId             String
+  verificationType   VerificationType
+  verificationStatus VerificationStatus @default(PENDING)
+  submittedAt        DateTime?
+  reviewedAt         DateTime?
+  reviewedBy         String?
+  remark             String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  user               User               @relation(fields: [userId], references: [id])
+
+  @@index([userId, verificationType])
+}
+
+model Tag {
+  id            String            @id @default(cuid())
+  tagType       TagType
+  name          String
+  slug          String            @unique
+  sortOrder     Int               @default(0)
+  status        TagStatus         @default(ACTIVE)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  userRelations UserTagRelation[]
+}
+
+model UserTagRelation {
+  id           String              @id @default(cuid())
+  userId       String
+  tagId        String
+  relationType UserTagRelationType
+  createdAt    DateTime            @default(now())
+
+  user         User                @relation(fields: [userId], references: [id])
+  tag          Tag                 @relation(fields: [tagId], references: [id])
+
+  @@unique([userId, tagId, relationType])
+  @@index([userId])
+}
+
+model Listing {
+  id                    String            @id @default(cuid())
+  listingType           ListingType
+  publisherId           String
+  title                 String
+  description           String
+  categoryCode          String?
+  tagsJson              Json?
+  cityCode              String?
+  locationText          String?
+  longitude             Decimal?          @db.Decimal(10, 7)
+  latitude              Decimal?          @db.Decimal(10, 7)
+  serviceMode           ServiceMode
+  budgetType            BudgetType?
+  budgetAmount          Decimal?          @db.Decimal(10, 2)
+  exchangeOfferText     String?
+  exchangeWantText      String?
+  headcount             Int?
+  startTime             DateTime?
+  endTime               DateTime?
+  isUrgent              Boolean           @default(false)
+  isFeatured            Boolean           @default(false)
+  featuredPriority      Int               @default(0)
+  featuredAt            DateTime?
+  featuredUntil         DateTime?
+  opsNote               String?
+  visibility            VisibilityType    @default(PUBLIC)
+  status                ListingStatus     @default(DRAFT)
+  auditStatus           AuditStatus       @default(PENDING)
+  auditReason           String?
+  acceptedApplicationId String?
+  publishedAt           DateTime?
+  closedAt              DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  deletedAt             DateTime?
+
+  publisher             User              @relation("ListingPublisher", fields: [publisherId], references: [id])
+  images                ListingImage[]
+  applications          Application[]
+  chats                 Chat[]
+  orders                Order[]
+  favorites             Favorite[]
+
+  @@index([publisherId, status])
+  @@index([listingType, status, cityCode, publishedAt])
+  @@index([auditStatus, status])
+}
+
+model ListingImage {
+  id        String   @id @default(cuid())
+  listingId String
+  imageUrl  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  listing   Listing  @relation(fields: [listingId], references: [id])
+
+  @@index([listingId, sortOrder])
+}
+
+model Application {
+  id                 String            @id @default(cuid())
+  listingId          String
+  applicantId        String
+  message            String
+  quotedPrice        Decimal?          @db.Decimal(10, 2)
+  availableStartTime DateTime?
+  portfolioUrls      Json?
+  status             ApplicationStatus @default(PENDING)
+  handledAt          DateTime?
+  handledBy          String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  listing            Listing           @relation(fields: [listingId], references: [id])
+  applicant          User              @relation(fields: [applicantId], references: [id])
+  orders             Order[]
+
+  @@unique([listingId, applicantId])
+  @@index([listingId, status])
+  @@index([applicantId, status])
+}
+
+model Chat {
+  id            String      @id @default(cuid())
+  chatType      ChatType
+  listingId     String?
+  orderId       String?
+  lastMessageId String?
+  lastMessageAt DateTime?
+  status        ChatStatus  @default(ACTIVE)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  listing       Listing?    @relation(fields: [listingId], references: [id])
+  order         Order?      @relation(fields: [orderId], references: [id])
+  members       ChatMember[]
+  messages      Message[]
+
+  @@index([listingId])
+  @@index([orderId])
+}
+
+model ChatMember {
+  id       String         @id @default(cuid())
+  chatId   String
+  userId   String
+  roleType ChatMemberRole
+  joinedAt DateTime       @default(now())
+
+  chat     Chat           @relation(fields: [chatId], references: [id])
+  user     User           @relation(fields: [userId], references: [id])
+
+  @@unique([chatId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id          String        @id @default(cuid())
+  chatId       String
+  senderId     String
+  messageType  MessageType
+  textContent  String?
+  imageUrl     String?
+  payloadJson  Json?
+  status       MessageStatus @default(SENT)
+  sentAt       DateTime      @default(now())
+  createdAt    DateTime      @default(now())
+
+  chat         Chat          @relation(fields: [chatId], references: [id])
+  sender       User          @relation(fields: [senderId], references: [id])
+
+  @@index([chatId, createdAt])
+}
+
+model Order {
+  id            String       @id @default(cuid())
+  listingId      String
+  applicationId  String?
+  buyerId        String
+  sellerId       String
+  orderType      OrderType
+  amountTotal    Decimal      @db.Decimal(10, 2)
+  platformFee    Decimal      @default(0) @db.Decimal(10, 2)
+  sellerIncome   Decimal      @default(0) @db.Decimal(10, 2)
+  escrowStatus   EscrowStatus @default(NOT_REQUIRED)
+  orderStatus    OrderStatus  @default(PENDING_PAYMENT)
+  scheduledAt    DateTime?
+  deliveredAt    DateTime?
+  completedAt    DateTime?
+  cancelledAt    DateTime?
+  closedReason   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  listing        Listing      @relation(fields: [listingId], references: [id])
+  application    Application? @relation(fields: [applicationId], references: [id])
+  buyer          User         @relation("OrderBuyer", fields: [buyerId], references: [id])
+  seller         User         @relation("OrderSeller", fields: [sellerId], references: [id])
+  chats          Chat[]
+  events         OrderEvent[]
+  payments       Payment[]
+  refunds        Refund[]
+  reviews        Review[]
+
+  @@index([buyerId, orderStatus])
+  @@index([sellerId, orderStatus])
+  @@index([listingId])
+}
+
+model OrderEvent {
+  id             String         @id @default(cuid())
+  orderId        String
+  eventType      OrderEventType
+  operatorUserId String?
+  operatorRole   String?
+  eventPayload   Json?
+  createdAt      DateTime       @default(now())
+
+  order          Order          @relation(fields: [orderId], references: [id])
+
+  @@index([orderId, createdAt])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  payerId           String
+  paymentChannel    PaymentChannel
+  amount            Decimal       @db.Decimal(10, 2)
+  paymentStatus     PaymentStatus @default(PENDING)
+  thirdPartyTradeNo String?
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  order             Order         @relation(fields: [orderId], references: [id])
+
+  @@index([orderId, paymentStatus])
+}
+
+model Refund {
+  id           String       @id @default(cuid())
+  orderId      String
+  requesterId  String
+  reasonCode   String
+  description  String?
+  refundAmount Decimal      @db.Decimal(10, 2)
+  refundStatus RefundStatus @default(PENDING)
+  reviewedBy   String?
+  reviewedAt   DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  order        Order        @relation(fields: [orderId], references: [id])
+
+  @@index([orderId, refundStatus])
+}
+
+model Review {
+  id          String       @id @default(cuid())
+  orderId      String
+  fromUserId   String
+  toUserId     String
+  score        Int
+  tagsJson     Json?
+  content      String?
+  imagesJson   Json?
+  isAnonymous  Boolean      @default(false)
+  status       ReviewStatus @default(VISIBLE)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  order        Order        @relation(fields: [orderId], references: [id])
+  fromUser     User         @relation("ReviewFromUser", fields: [fromUserId], references: [id])
+  toUser       User         @relation("ReviewToUser", fields: [toUserId], references: [id])
+
+  @@unique([orderId, fromUserId])
+  @@index([toUserId, status])
+}
+
+model Report {
+  id           String           @id @default(cuid())
+  reporterId   String
+  targetType   ReportTargetType
+  targetId     String
+  reasonCode   String
+  description  String?
+  evidenceUrls Json?
+  status       ReportStatus     @default(PENDING)
+  reviewResult String?
+  reviewedBy   String?
+  reviewedAt   DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  reporter     User             @relation(fields: [reporterId], references: [id])
+
+  @@index([reporterId])
+  @@index([targetType, targetId])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  listingId  String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  listing    Listing  @relation(fields: [listingId], references: [id])
+
+  @@unique([userId, listingId])
+  @@index([userId, createdAt])
+}
+
+model AdminUser {
+  id           String      @id @default(cuid())
+  username     String      @unique
+  passwordHash String
+  role         AdminRole
+  status       AdminStatus @default(ACTIVE)
+  lastLoginAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  auditLogs    AuditLog[]
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  operatorId String
+  targetType String
+  targetId   String
+  action     String
+  detailJson Json?
+  createdAt  DateTime  @default(now())
+
+  operator   AdminUser @relation(fields: [operatorId], references: [id])
+
+  @@index([operatorId, createdAt])
+  @@index([targetType, targetId])
+}

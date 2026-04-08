@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>No Doubt Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600;700&family=Fira+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="admin-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">ND</span>
+          <div>
+            <h1>No Doubt</h1>
+            <p>运营后台</p>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav-item is-active" data-panel="overview">总览</button>
+          <button class="nav-item" data-panel="listings">发布审核</button>
+          <button class="nav-item" data-panel="reports">举报处理</button>
+          <button class="nav-item" data-panel="orders">订单观察</button>
+          <button class="nav-item" data-panel="users">用户巡检</button>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h2 id="panel-title">总览</h2>
+            <p id="panel-description">这里直接读取开发环境数据，用来演示审核、风控和运营观察面板。</p>
+          </div>
+          <div class="topbar-actions">
+            <span class="api-tag" id="api-tag">API: http://127.0.0.1:3000/api/v1/admin</span>
+            <button class="ghost-button" id="refresh-button">刷新数据</button>
+          </div>
+        </header>
+
+        <section class="panel is-active" id="overview">
+          <div id="overview-metrics" class="metrics"></div>
+          <div class="grid">
+            <section class="card">
+              <div class="card-head">
+                <h3>最新发布</h3>
+                <span>实时</span>
+              </div>
+              <div id="overview-listings" class="stack-list"></div>
+            </section>
+            <section class="card">
+              <div class="card-head">
+                <h3>最新订单</h3>
+                <span>实时</span>
+              </div>
+              <div id="overview-orders" class="stack-list"></div>
+            </section>
+            <section class="card">
+              <div class="card-head">
+                <h3>城市热力</h3>
+                <span>区域信号</span>
+              </div>
+              <div id="overview-map" class="map-board"></div>
+            </section>
+            <section class="card">
+              <div class="card-head">
+                <h3>最近流转</h3>
+                <span>时间线</span>
+              </div>
+              <div id="overview-timeline" class="timeline-list"></div>
+            </section>
+            <section class="card">
+              <div class="card-head">
+                <div>
+                  <h3>高价值任务池</h3>
+                  <span id="opportunities-count">0 条</span>
+                </div>
+                <div class="inline-filters">
+                  <input id="opportunities-search" class="filter-input" type="search" placeholder="搜索标题 / 发布者 / 城市" />
+                  <select id="opportunities-filter" class="filter-input">
+                    <option value="ALL">全部机会</option>
+                    <option value="FEATURED">已推荐</option>
+                    <option value="CANDIDATE">待推荐</option>
+                    <option value="CONVERTING">正在推进</option>
+                    <option value="EXPIRING">即将过期</option>
+                  </select>
+                  <button class="ghost-button" id="opportunities-bulk-feature">批量推荐</button>
+                  <button class="ghost-button" id="opportunities-bulk-unfeature">批量取消</button>
+                </div>
+              </div>
+              <div id="overview-opportunities" class="stack-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="panel" id="listings">
+          <div class="table-card">
+            <div class="card-head">
+              <div>
+                <h3>待审核发布</h3>
+                <span id="listings-count">0 条</span>
+              </div>
+              <div class="inline-filters">
+                <input id="listings-search" class="filter-input" type="search" placeholder="搜索标题 / 发布者" />
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>标题</th>
+                    <th>类型</th>
+                    <th>发布者</th>
+                    <th>城市</th>
+                    <th>申请</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="listings-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="reports">
+          <div class="table-card">
+            <div class="card-head">
+              <div>
+                <h3>举报处理</h3>
+                <span id="reports-count">0 条</span>
+              </div>
+              <div class="inline-filters">
+                <select id="reports-status-filter" class="filter-input">
+                  <option value="ALL">全部状态</option>
+                  <option value="PENDING">待处理</option>
+                  <option value="RESOLVED">已处理</option>
+                  <option value="REJECTED">已驳回</option>
+                </select>
+                <input id="reports-search" class="filter-input" type="search" placeholder="搜索原因 / 举报者 / 对象" />
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>举报者</th>
+                    <th>对象类型</th>
+                    <th>对象 ID</th>
+                    <th>原因</th>
+                    <th>状态</th>
+                    <th>处理结果</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="reports-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="orders">
+          <div class="table-card">
+            <div class="card-head">
+              <h3>订单观察</h3>
+              <span id="orders-count">0 条</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>订单</th>
+                    <th>角色关系</th>
+                    <th>类型</th>
+                    <th>金额</th>
+                    <th>当前阶段</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="users">
+          <div class="table-card">
+            <div class="card-head">
+              <h3>用户巡检</h3>
+              <span id="users-count">0 位</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>昵称</th>
+                    <th>手机号</th>
+                    <th>城市</th>
+                    <th>信用分</th>
+                    <th>发布 / 申请</th>
+                    <th>订单</th>
+                  </tr>
+                </thead>
+                <tbody id="users-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="status-banner" class="status-banner" hidden></section>
+      </main>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
