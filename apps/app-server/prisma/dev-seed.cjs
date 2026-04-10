@@ -338,6 +338,27 @@ const taskTemplates = [
     budgetRange: [99, 199],
   },
   {
+    title: '陪我去喂一次流浪猫，顺手把它们今天的状态认真记下来',
+    description:
+      '我最近总惦记这片街区里的几只猫，但一个人去总怕照顾不周。希望你愿意一起去，帮我看看它们的状态，再替我留下几张今天的记录。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [66, 188],
+  },
+  {
+    title: '陪我一起搬一次家，不只是出力，也帮我稳住一点心情',
+    description:
+      '这次搬家不算特别远，但情绪上有点舍不得。希望你愿意搭把手，一起把东西搬过去，也顺手陪我把这件事体面地做完。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [188, 420],
+  },
+  {
+    title: '陪我去医院做一次检查，路上不用多说话也没关系',
+    description:
+      '不是很严重的事，但一个人去总会有点慌。希望你能陪我走一趟，帮我记一下流程和注意事项，让这次看诊没那么孤单。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [120, 260],
+  },
+  {
     title: '替我去一个城市角落打卡，并帮我带回十张有故事感的照片',
     description:
       '我最近在做一个“城市小角落”相册计划，想收集那些不那么热门、但看起来有情绪的地方。希望你会观察、会讲述。',
@@ -415,6 +436,13 @@ const taskTemplates = [
     budgetRange: [99, 260],
   },
   {
+    title: '替我去书店里挑一本今天最适合我的书，再写一句推荐理由',
+    description:
+      '我最近有点读不进去东西，想让一个陌生人替我选一本“现在的我也许会需要”的书。你不需要很懂文学，但希望你会观察人。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [88, 220],
+  },
+  {
     title: '帮我把一次想说又不敢说的话，变成更体面的一次见面',
     description:
       '我不是要你替我说，而是想找一个愿意帮我顺顺情绪、想想节奏、让我在真正见面前不要那么慌的人。',
@@ -424,6 +452,14 @@ const taskTemplates = [
 ];
 
 const exchangeTemplates = [
+  {
+    title: '我帮你把一次普通散步拍得像生活电影，换你陪我去看一次冷门展',
+    description:
+      '我擅长抓自然状态和没那么端着的画面，希望你愿意带我看一次你自己喜欢的展，顺便聊聊为什么它值得被看见。',
+    offer: '生活感拍摄、照片筛选',
+    want: '看展陪伴、在地分享',
+    serviceMode: 'OFFLINE',
+  },
   {
     title: '给你拍一组生活感照片，换你帮我把自我介绍写得更像我',
     description:

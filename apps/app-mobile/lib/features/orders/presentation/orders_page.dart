@@ -19,7 +19,7 @@ class OrdersPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('订单'),
+        title: const Text('合作记录'),
         actions: [
           IconButton(
             onPressed: controller.refreshAll,
@@ -109,10 +109,7 @@ class _OrdersContentState extends State<_OrdersContent> {
           activeCount: widget.activeCount,
         ),
         const SizedBox(height: 16),
-        Text(
-          '切换视角',
-          style: theme.textTheme.titleMedium,
-        ),
+        Text('从哪一侧看这件事', style: theme.textTheme.titleMedium),
         const SizedBox(height: 10),
         Wrap(
           spacing: 10,
@@ -124,12 +121,12 @@ class _OrdersContentState extends State<_OrdersContent> {
               onTap: () => setState(() => _filter = _OrderFilter.all),
             ),
             _FilterPill(
-              label: '买方 ${widget.buyerCount}',
+              label: '发起方 ${widget.buyerCount}',
               selected: _filter == _OrderFilter.buyer,
               onTap: () => setState(() => _filter = _OrderFilter.buyer),
             ),
             _FilterPill(
-              label: '服务方 ${widget.sellerCount}',
+              label: '回应方 ${widget.sellerCount}',
               selected: _filter == _OrderFilter.seller,
               onTap: () => setState(() => _filter = _OrderFilter.seller),
             ),
@@ -149,7 +146,7 @@ class _OrdersContentState extends State<_OrdersContent> {
         TextField(
           decoration: const InputDecoration(
             prefixIcon: Icon(Icons.search_rounded),
-            hintText: '搜索订单标题 / 状态',
+            hintText: '搜索合作标题 / 状态',
           ),
           onChanged: (value) {
             setState(() {
@@ -213,13 +210,13 @@ class _OrdersHero extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              'Flow room',
+              'COOPERATION LOG',
               style: theme.textTheme.bodySmall?.copyWith(color: Colors.white),
             ),
           ),
           const SizedBox(height: 14),
           Text(
-            '订单都在这里，先看状态，再推进下一步。',
+            '已经接住的事，都在这里继续往下做。',
             style: theme.textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               height: 1.08,
@@ -227,7 +224,7 @@ class _OrdersHero extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '买方、服务方和进行中视角都保留，但页面本身尽量保持简单。',
+            '不管你是发起的一方，还是回应的一方，都能在这里看到一件事是怎么慢慢被做成的。',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.86),
             ),
@@ -237,9 +234,9 @@ class _OrdersHero extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: [
-              _StatTile(label: '总订单', value: '$totalCount', color: Colors.white),
-              _StatTile(label: '买方', value: '$buyerCount', color: const Color(0xFFFFE27A)),
-              _StatTile(label: '服务方', value: '$sellerCount', color: const Color(0xFFD9FDE5)),
+              _StatTile(label: '总合作', value: '$totalCount', color: Colors.white),
+              _StatTile(label: '发起方', value: '$buyerCount', color: const Color(0xFFFFE27A)),
+              _StatTile(label: '回应方', value: '$sellerCount', color: const Color(0xFFD9FDE5)),
               _StatTile(label: '进行中', value: '$activeCount', color: const Color(0xFFDDF4FF)),
             ],
           ),
@@ -417,8 +414,8 @@ class _OrderCardState extends State<_OrderCard> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _MiniTag(label: isBuyer ? '我是买方' : isSeller ? '我是服务方' : '参与方'),
-                  _MiniTag(label: widget.item.listingType == 'EXCHANGE' ? '交换单' : '任务单'),
+                  _MiniTag(label: isBuyer ? '我是发起方' : isSeller ? '我是回应方' : '参与中'),
+                  _MiniTag(label: widget.item.listingType == 'EXCHANGE' ? '交换合作' : '任务合作'),
                 ],
               ),
               if (actions.isNotEmpty) ...[
@@ -449,9 +446,9 @@ class _OrderCardState extends State<_OrderCard> {
     if (isBuyer && status == 'PENDING_PAYMENT') {
       return [
         FilledButton.icon(
-          onPressed: () => _run(context, () => AppScope.of(context).payOrder(widget.item.id), '开发支付已完成。'),
+          onPressed: () => _run(context, () => AppScope.of(context).payOrder(widget.item.id), '这次托付已经确认。'),
           icon: const Icon(Icons.wallet_rounded),
-          label: const Text('开发支付'),
+          label: const Text('确认托付'),
         ),
       ];
     }
@@ -459,9 +456,9 @@ class _OrderCardState extends State<_OrderCard> {
     if (isSeller && status == 'PENDING_ACCEPT') {
       return [
         FilledButton.icon(
-          onPressed: () => _run(context, () => AppScope.of(context).acceptOrder(widget.item.id), '订单已接单。'),
+          onPressed: () => _run(context, () => AppScope.of(context).acceptOrder(widget.item.id), '这件事已经接住。'),
           icon: const Icon(Icons.handshake_rounded),
-          label: const Text('接单'),
+          label: const Text('接住这件事'),
         ),
       ];
     }
@@ -469,9 +466,9 @@ class _OrderCardState extends State<_OrderCard> {
     if (isSeller && status == 'IN_PROGRESS') {
       return [
         FilledButton.icon(
-          onPressed: () => _run(context, () => AppScope.of(context).deliverOrder(widget.item.id), '已标记交付。'),
+          onPressed: () => _run(context, () => AppScope.of(context).deliverOrder(widget.item.id), '已经标记为做完了。'),
           icon: const Icon(Icons.done_all_rounded),
-          label: const Text('标记交付'),
+          label: const Text('标记已做完'),
         ),
       ];
     }
@@ -479,9 +476,9 @@ class _OrderCardState extends State<_OrderCard> {
     if (isBuyer && status == 'PENDING_CONFIRMATION') {
       return [
         FilledButton.icon(
-          onPressed: () => _run(context, () => AppScope.of(context).confirmOrder(widget.item.id), '订单已确认完成。'),
+          onPressed: () => _run(context, () => AppScope.of(context).confirmOrder(widget.item.id), '这件事已经确认完成。'),
           icon: const Icon(Icons.verified_rounded),
-          label: const Text('确认完成'),
+          label: const Text('确认这件事完成'),
         ),
       ];
     }
@@ -604,7 +601,7 @@ class _EmptyOrdersState extends StatelessWidget {
               Text('还没有订单', style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
               Text(
-                '先接受一条申请，再把第一笔合作推进到订单里。',
+                '先接住一条回应，再把第一件合作慢慢推进到完成。',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -651,8 +648,8 @@ String _statusLabel(String status) {
 String _orderTypeLabel(String type) {
   switch (type) {
     case 'EXCHANGE':
-      return '交换订单';
+      return '交换合作';
     default:
-      return '任务订单';
+      return '任务合作';
   }
 }

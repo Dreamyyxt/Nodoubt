@@ -54,7 +54,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('我的发布'),
+        title: const Text('我发起的事'),
         actions: [
           IconButton(
             onPressed: controller.refreshAll,
@@ -74,8 +74,8 @@ class _MyListingsPageState extends State<MyListingsPage> {
             ? _EmptyState(
                 title: _filter == MyListingsFilter.all ? '还没有发布内容' : '当前筛选下还没有内容',
                 description: _filter == MyListingsFilter.all
-                    ? '先去发布页发一条任务或交换，把你的工作台填满。'
-                    : '换个状态看看，或者继续创建一条新的发布。',
+                    ? '先去贴一件小事，把你的任务墙记录慢慢填起来。'
+                    : '换个状态看看，或者继续贴一件新的小事。',
               )
             : ListView(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -162,13 +162,13 @@ class _ListingsHero extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              'Creator workspace',
+              'MY TASK WALL',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white),
             ),
           ),
           const SizedBox(height: 14),
           Text(
-            '把你的任务和交换，像作品集一样管理起来。',
+            '把你发起过的事，像一面自己的任务墙一样收起来。',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Colors.white,
                   height: 1.08,
@@ -176,7 +176,7 @@ class _ListingsHero extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '待审核、进行中、已结束会自动分层，你只需要专注于下一条最值得推进的合作。',
+            '待审核、推进中、已结束会自动分层，你只需要专注于眼下最值得继续的一件事。',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white.withValues(alpha: 0.86),
                 ),
@@ -353,11 +353,11 @@ class _ListingCard extends StatelessWidget {
                   _MetaChip(
                     label: item.listingType == 'EXCHANGE'
                         ? '技能交换'
-                        : '悬赏任务',
+                        : '城市小事',
                   ),
                   if (item.cityCode?.isNotEmpty == true) _MetaChip(label: item.cityCode!),
                   if (item.isUrgent) const _MetaChip(label: '加急'),
-                  if (item.applicationCount > 0) _MetaChip(label: '${item.applicationCount} 条申请'),
+                  if (item.applicationCount > 0) _MetaChip(label: '${item.applicationCount} 条回应'),
                 ],
               ),
               const SizedBox(height: 14),
@@ -384,7 +384,7 @@ class _ListingCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('驳回原因', style: Theme.of(context).textTheme.titleSmall),
+                            Text('为什么这件事暂时没通过', style: Theme.of(context).textTheme.titleSmall),
                             const SizedBox(height: 4),
                             Text(item.auditReason!, style: Theme.of(context).textTheme.bodyMedium),
                           ],
@@ -411,7 +411,7 @@ class _ListingCard extends StatelessWidget {
                       }
                     },
                     icon: const Icon(Icons.edit_outlined),
-                    label: const Text('去修改重新提交'),
+                    label: const Text('改一改再贴上去'),
                   ),
                 ),
               ],
