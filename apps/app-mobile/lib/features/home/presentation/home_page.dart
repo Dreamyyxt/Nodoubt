@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element, unused_element_parameter
+
 import 'package:flutter/material.dart';
 
 import '../../../core/models/app_listing.dart';
@@ -34,13 +36,8 @@ enum _ListingDiscoveryType {
 enum _ListingSortMode { newest, hottest, trusted, budgetHigh }
 
 class _HomePageState extends State<HomePage> {
-  _HomeViewMode _viewMode = _HomeViewMode.cards;
   String? _selectedCityCode;
   String _search = '';
-  _ListingDiscoveryType _typeFilter = _ListingDiscoveryType.all;
-  _ListingSortMode _sortMode = _ListingSortMode.newest;
-  String? _serviceModeFilter;
-  bool _urgentOnly = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +45,6 @@ class _HomePageState extends State<HomePage> {
     final allListings = controller.listings
         .where((item) => item.listingType != 'BUDDY')
         .toList(growable: false);
-    final taskCount = allListings
-        .where((item) => item.listingType == 'TASK')
-        .length;
-    final exchangeCount = allListings
-        .where((item) => item.listingType == 'EXCHANGE')
-        .length;
     final cityClusters = _buildCityClusters(allListings);
     final selectedCluster = _selectedCityCode == null
         ? null
@@ -66,23 +57,13 @@ class _HomePageState extends State<HomePage> {
               .where((item) => item.cityCode == selectedCluster.cityCode)
               .toList(growable: false);
     final discoveredListings = _applyDiscoveryFilters(listings);
-    final stories = _buildStoryWallStories(
-      listings: allListings,
-      myListings: controller.myListings,
-      myOrders: controller.myOrders,
-    );
-    final activeFilterCount =
-        (_search.isNotEmpty ? 1 : 0) +
-        (_typeFilter != _ListingDiscoveryType.all ? 1 : 0) +
-        (_serviceModeFilter != null ? 1 : 0) +
-        (_urgentOnly ? 1 : 0) +
-        (_sortMode != _ListingSortMode.newest ? 1 : 0);
     return RefreshIndicator(
       onRefresh: controller.refreshAll,
       child: CustomScrollView(
         slivers: [
           SliverAppBar(
             pinned: true,
+            surfaceTintColor: Colors.transparent,
             title: const Text('确任'),
             actions: [
               IconButton(
@@ -95,66 +76,14 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                _HomeHero(taskCount: taskCount, exchangeCount: exchangeCount),
-                const SizedBox(height: 22),
-                _SectionPanel(
-                  title: '先缩小范围',
-                  subtitle: activeFilterCount == 0
-                      ? '先按你想接住的事缩小范围，再去看这座城市此刻正在发生什么。'
-                      : '当前已开启 $activeFilterCount 个任务墙条件。',
-                  accent: const Color(0xFFF8FAFC),
-                  child: _DiscoveryControlPanel(
-                    search: _search,
-                    typeFilter: _typeFilter,
-                    sortMode: _sortMode,
-                    serviceModeFilter: _serviceModeFilter,
-                    urgentOnly: _urgentOnly,
-                    resultCount: discoveredListings.length,
-                    onSearchChanged: (value) {
-                      setState(() {
-                        _search = value;
-                      });
-                    },
-                    onTypeChanged: (value) {
-                      setState(() {
-                        _typeFilter = value;
-                      });
-                    },
-                    onSortChanged: (value) {
-                      setState(() {
-                        _sortMode = value;
-                      });
-                    },
-                    onServiceModeChanged: (value) {
-                      setState(() {
-                        _serviceModeFilter = value;
-                      });
-                    },
-                    onUrgentChanged: (value) {
-                      setState(() {
-                        _urgentOnly = value;
-                      });
-                    },
-                    onReset: activeFilterCount == 0
-                        ? null
-                        : () {
-                            setState(() {
-                              _search = '';
-                              _typeFilter = _ListingDiscoveryType.all;
-                              _sortMode = _ListingSortMode.newest;
-                              _serviceModeFilter = null;
-                              _urgentOnly = false;
-                            });
-                          },
-                  ),
-                ),
-                const SizedBox(height: 22),
-                _SectionPanel(
-                  title: '区域热力',
+                _MinimalHomeBlock(
+                  eyebrow: 'Map',
+                  title: selectedCluster == null
+                      ? '先看这座城市的任务落在哪里'
+                      : '现在看的是 ${selectedCluster.label}',
                   subtitle: selectedCluster == null
-                      ? '先看这座城市哪些地方正在发出任务，再决定你想去哪一片。'
-                      : '当前聚焦 ${selectedCluster.label}，下面的任务墙已经切到这个城市。',
-                  accent: const Color(0xFFEEF6FF),
+                      ? '地图先帮你缩小范围，下面只留一叠正在等待回应的小事。'
+                      : '地图已经切到 ${selectedCluster.label}，下面这叠卡片也会跟着变化。',
                   child: _RegionHeatSection(
                     clusters: cityClusters,
                     selectedCityCode: _selectedCityCode,
@@ -175,21 +104,38 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(height: 22),
-                _SectionPanel(
+                _MinimalHomeBlock(
+                  eyebrow: 'Deck',
                   title: selectedCluster == null
-                      ? '城市任务墙'
-                      : '${selectedCluster.label} 的任务墙',
+                      ? '翻翻这叠城市里的小事'
+                      : '翻翻 ${selectedCluster.label} 的这叠小事',
                   subtitle: selectedCluster == null
-                      ? '这里只放城市里正在等待回应的小事，不放多余的东西。'
-                      : '你现在看到的，都是 ${selectedCluster.label} 正在等待被接住的小事。',
-                  accent: const Color(0xFFFFFCF2),
-                  action: _ViewToggle(
-                    value: _viewMode,
-                    onChanged: (mode) {
-                      setState(() {
-                        _viewMode = mode;
-                      });
-                    },
+                      ? '首页只留下地图和任务 deck。你可以先搜一句话，再一张张翻。'
+                      : '下面这叠卡片，都是 ${selectedCluster.label} 此刻正在等待被接住的小事。',
+                  trailing: SizedBox(
+                    width: 240,
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          _search = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: '搜一句话或地点',
+                        isDense: true,
+                        prefixIcon: const Icon(Icons.search_rounded),
+                        suffixIcon: _search.isEmpty
+                            ? null
+                            : IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _search = '';
+                                  });
+                                },
+                                icon: const Icon(Icons.close_rounded),
+                              ),
+                      ),
+                    ),
                   ),
                   child: Builder(
                     builder: (context) {
@@ -212,12 +158,12 @@ class _HomePageState extends State<HomePage> {
                       }
                       if (discoveredListings.isEmpty) {
                         return _StateCard(
-                          title: activeFilterCount == 0 ? '广场还空着' : '没有找到匹配内容',
-                          description: activeFilterCount == 0
-                              ? '后端已经接通，但当前任务墙还没有新的小事。下一步可以先贴一条试试。'
-                              : '换个关键词、服务方式或排序试试，或者清空筛选看全部内容。',
-                          actionLabel: activeFilterCount == 0 ? '去贴一件事' : '清空筛选',
-                          onAction: activeFilterCount == 0
+                          title: _search.isEmpty ? '这叠卡片还空着' : '没有搜到这件事',
+                          description: _search.isEmpty
+                              ? '地图已经准备好了，但现在还没有新的小事贴上来。你可以先发起一件。'
+                              : '换一句更短的关键词试试，或者清空搜索看看整叠卡片。',
+                          actionLabel: _search.isEmpty ? '去贴一件事' : '清空搜索',
+                          onAction: _search.isEmpty
                               ? () {
                                   Navigator.of(context).push(
                                     _playfulRoute(
@@ -231,53 +177,23 @@ class _HomePageState extends State<HomePage> {
                               : () {
                                   setState(() {
                                     _search = '';
-                                    _typeFilter = _ListingDiscoveryType.all;
-                                    _sortMode = _ListingSortMode.newest;
-                                    _serviceModeFilter = null;
-                                    _urgentOnly = false;
                                   });
                                 },
                         );
                       }
-                      return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 260),
-                        switchInCurve: Curves.easeOutCubic,
-                        child: _viewMode == _HomeViewMode.cards
-                            ? _CardDeckSection(
-                                key: const ValueKey('cards'),
-                                listings: discoveredListings,
-                              )
-                            : _ListSection(
-                                key: const ValueKey('list'),
-                                listings: discoveredListings,
-                              ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 22),
-                _SectionPanel(
-                  title: '城市故事墙',
-                  subtitle: '这里放的是那些最像电影开场、最温柔、也最值得被讲出来的小事。',
-                  accent: const Color(0xFFF5F3FF),
-                  action: TextButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => StoryFeedPage(
-                            stories: _mapToStoryFeedItems(stories),
-                            listings: [
-                              ...controller.listings,
-                              ...controller.myListings,
-                            ],
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${discoveredListings.length} 张卡片',
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
-                        ),
+                          const SizedBox(height: 14),
+                          _CardDeckSection(listings: discoveredListings),
+                        ],
                       );
                     },
-                    icon: const Icon(Icons.auto_stories_rounded),
-                    label: const Text('进入逛逛'),
                   ),
-                  child: _StoryWallSection(stories: stories),
                 ),
               ]),
             ),
@@ -300,78 +216,7 @@ class _HomePageState extends State<HomePage> {
             _cityLabel(item.cityCode).toLowerCase().contains(query);
       });
     }
-
-    if (_typeFilter != _ListingDiscoveryType.all) {
-      results = results.where(
-        (item) => _matchesDiscoveryType(item, _typeFilter),
-      );
-    }
-
-    if (_serviceModeFilter != null) {
-      results = results.where((item) => item.serviceMode == _serviceModeFilter);
-    }
-
-    if (_urgentOnly) {
-      results = results.where((item) => item.isUrgent);
-    }
-
-    final sorted = results.toList(growable: false);
-    sorted.sort((a, b) {
-      switch (_sortMode) {
-        case _ListingSortMode.hottest:
-          return b.applicationCount.compareTo(a.applicationCount);
-        case _ListingSortMode.trusted:
-          return (b.publisherCreditScore ?? 0).compareTo(
-            a.publisherCreditScore ?? 0,
-          );
-        case _ListingSortMode.budgetHigh:
-          return (b.budgetAmount ?? 0).compareTo(a.budgetAmount ?? 0);
-        case _ListingSortMode.newest:
-          return 0;
-      }
-    });
-
-    return sorted;
-  }
-}
-
-bool _matchesDiscoveryType(AppListing item, _ListingDiscoveryType type) {
-  final text = '${item.title} ${item.description} ${item.locationText ?? ''}';
-
-  switch (type) {
-    case _ListingDiscoveryType.all:
-      return true;
-    case _ListingDiscoveryType.companionship:
-      return text.contains('陪') ||
-          text.contains('听我') ||
-          text.contains('晚饭') ||
-          text.contains('看展') ||
-          text.contains('散步');
-    case _ListingDiscoveryType.together:
-      return text.contains('一起') ||
-          text.contains('开始') ||
-          text.contains('周末') ||
-          text.contains('第一次') ||
-          text.contains('逛');
-    case _ListingDiscoveryType.lifestyle:
-      return text.contains('房间') ||
-          text.contains('生活') ||
-          text.contains('生日') ||
-          text.contains('见面') ||
-          text.contains('记录');
-    case _ListingDiscoveryType.kindness:
-      return text.contains('猫') ||
-          text.contains('花') ||
-          text.contains('流浪') ||
-          text.contains('善意') ||
-          text.contains('照看');
-    case _ListingDiscoveryType.skill:
-      return item.listingType == 'EXCHANGE' ||
-          text.contains('拍') ||
-          text.contains('修') ||
-          text.contains('剪') ||
-          text.contains('设计') ||
-          text.contains('写');
+    return results.toList(growable: false);
   }
 }
 
@@ -577,6 +422,67 @@ class _SectionPanel extends StatelessWidget {
             ),
             child: child,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MinimalHomeBlock extends StatelessWidget {
+  const _MinimalHomeBlock({
+    required this.eyebrow,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+    this.trailing,
+  });
+
+  final String eyebrow;
+  final String title;
+  final String subtitle;
+  final Widget child;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: const Color(0xFFE7E5E4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            eyebrow.toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              letterSpacing: 1.2,
+              color: const Color(0xFF71717A),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: theme.textTheme.headlineMedium),
+                    const SizedBox(height: 6),
+                    Text(subtitle, style: theme.textTheme.bodyMedium),
+                  ],
+                ),
+              ),
+              if (trailing != null) ...[const SizedBox(width: 16), trailing!],
+            ],
+          ),
+          const SizedBox(height: 18),
+          child,
         ],
       ),
     );
@@ -836,48 +742,44 @@ class _RegionHeatSection extends StatelessWidget {
               .where((cluster) => cluster.cityCode == selectedCityCode)
               .firstOrNull;
 
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: const LinearGradient(
-            colors: [Color(0xFFF7F2FF), Color(0xFFF5FAFF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFAFAFA),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFE7E5E4)),
+          ),
+          child: _GoogleMapRegionBoard(
+            clusters: clusters,
+            selectedCityCode: selectedCityCode,
+            onCityTap: onCityTap,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                _RegionLegend(label: '任务热度', color: const Color(0xFF7C3AED)),
-                _RegionLegend(label: '订单活跃', color: const Color(0xFF22C55E)),
-                _RegionLegend(
-                  label: '点城市筛选灵感广场',
-                  color: const Color(0xFFF97316),
-                ),
-                if (selectedCluster != null)
-                  ActionChip(
-                    avatar: const Icon(Icons.tune_rounded, size: 18),
-                    label: Text('当前：${selectedCluster.label}'),
-                    onPressed: onClearFilter,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            _GoogleMapRegionBoard(
-              clusters: clusters,
-              selectedCityCode: selectedCityCode,
-              onCityTap: onCityTap,
-            ),
-          ],
-        ),
-      ),
+        if (selectedCluster != null) ...[
+          const SizedBox(height: 12),
+          TextButton.icon(
+            onPressed: onClearFilter,
+            icon: const Icon(Icons.restart_alt_rounded),
+            label: Text('回到全部城市 · 当前 ${selectedCluster.label}'),
+          ),
+        ],
+      ],
     );
+  }
+}
+
+class _RegionLegend extends StatelessWidget {
+  const _RegionLegend({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox.shrink();
   }
 }
 
@@ -1078,36 +980,6 @@ class _WhitePill extends StatelessWidget {
   }
 }
 
-class _RegionLegend extends StatelessWidget {
-  const _RegionLegend({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 8),
-          Text(label, style: Theme.of(context).textTheme.bodySmall),
-        ],
-      ),
-    );
-  }
-}
-
 class _GoogleMapRegionBoard extends StatelessWidget {
   const _GoogleMapRegionBoard({
     required this.clusters,
@@ -1242,20 +1114,13 @@ class _CityFilterChip extends StatelessWidget {
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFF111827) : Colors.white,
+            color: selected ? const Color(0xFF18181B) : const Color(0xFFFFFFFF),
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
               color: selected
-                  ? const Color(0xFF111827)
-                  : const Color(0xFFD8DDF7),
+                  ? const Color(0xFF18181B)
+                  : const Color(0xFFE7E5E4),
             ),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x14111C43),
-                blurRadius: 14,
-                offset: Offset(0, 8),
-              ),
-            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -1263,7 +1128,7 @@ class _CityFilterChip extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: selected ? Colors.white : const Color(0xFF111827),
+                  color: selected ? Colors.white : const Color(0xFF18181B),
                 ),
               ),
               const SizedBox(width: 8),
@@ -1271,14 +1136,14 @@ class _CityFilterChip extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: selected
-                      ? Colors.white.withValues(alpha: 0.14)
-                      : const Color(0xFFF4F1FF),
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : const Color(0xFFF4F4F5),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   '$count',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: selected ? Colors.white : const Color(0xFF5B21B6),
+                    color: selected ? Colors.white : const Color(0xFF3F3F46),
                   ),
                 ),
               ),
@@ -1423,7 +1288,8 @@ class _StateCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
-          color: tint,
+          color: const Color(0xFFFAFAFA),
+          border: Border.all(color: const Color(0xFFE7E5E4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1909,15 +1775,13 @@ class _DeckCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final palette = theme.extension<AppPalette>()!;
     final isExchange = listing.listingType == 'EXCHANGE';
-    final accent = isExchange
-        ? const Color(0xFF06B6D4)
-        : const Color(0xFFF97316);
-    final soft = isExchange ? palette.tertiarySoft : palette.secondarySoft;
     final mood = _listingMoodLabel(listing);
     final teaser = _listingTeaser(listing);
     final scene = _sceneLabel(listing);
+    final accent = listing.isFeatured
+        ? const Color(0xFFEC4899)
+        : const Color(0xFF18181B);
 
     return Card(
       child: InkWell(
@@ -1926,14 +1790,8 @@ class _DeckCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32),
-            gradient: LinearGradient(
-              colors: [
-                Colors.white,
-                soft.withValues(alpha: muted ? 0.72 : 0.92),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: muted ? const Color(0xFFF7F7F8) : const Color(0xFFFFFFFF),
+            border: Border.all(color: const Color(0xFFE7E5E4)),
           ),
           padding: EdgeInsets.all(compact ? 14 : 20),
           child: Stack(
@@ -1960,7 +1818,7 @@ class _DeckCard extends StatelessWidget {
                                     vertical: compact ? 6 : 8,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.78),
+                                    color: const Color(0xFFF4F4F5),
                                     borderRadius: BorderRadius.circular(999),
                                   ),
                                   child: Text(
@@ -1976,13 +1834,13 @@ class _DeckCard extends StatelessWidget {
                                 vertical: compact ? 5 : 7,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.82),
+                                color: const Color(0xFFF4F4F5),
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               child: Text(
                                 mood,
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: accent,
+                                  color: const Color(0xFF52525B),
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -1994,14 +1852,14 @@ class _DeckCard extends StatelessWidget {
                                   vertical: compact ? 5 : 7,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFEEF2FF),
+                                  color: const Color(0xFFFCE7F3),
                                   borderRadius: BorderRadius.circular(999),
-                                  border: Border.all(color: const Color(0xFFC7D2FE)),
+                                  border: Border.all(color: const Color(0xFFF9A8D4)),
                                 ),
                                 child: Text(
                                   '推荐',
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: const Color(0xFF4338CA),
+                                    color: const Color(0xFFBE185D),
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -2016,13 +1874,13 @@ class _DeckCard extends StatelessWidget {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: accent.withValues(alpha: 0.12),
+                          color: const Color(0xFFF4F4F5),
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
                           listing.cityCode ?? '同城',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: accent,
+                            color: const Color(0xFF52525B),
                           ),
                         ),
                       ),
@@ -2032,8 +1890,9 @@ class _DeckCard extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(compact ? 10 : 14),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.74),
+                      color: const Color(0xFFFAFAFA),
                       borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFFE7E5E4)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2082,8 +1941,9 @@ class _DeckCard extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(compact ? 8 : 14),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.8),
+                      color: const Color(0xFFFAFAFA),
                       borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFFE7E5E4)),
                     ),
                     child: Row(
                       children: [
@@ -2091,7 +1951,9 @@ class _DeckCard extends StatelessWidget {
                           width: compact ? 32 : 44,
                           height: compact ? 32 : 44,
                           decoration: BoxDecoration(
-                            color: accent.withValues(alpha: 0.12),
+                            color: listing.isFeatured
+                                ? const Color(0xFFFCE7F3)
+                                : const Color(0xFFF4F4F5),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Icon(
@@ -2173,7 +2035,7 @@ class _SwipeHintOverlay extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final color = isRight ? const Color(0xFF22C55E) : const Color(0xFFF97316);
+    final color = isRight ? const Color(0xFF18181B) : const Color(0xFF3F3F46);
     final alignment = isRight ? Alignment.topLeft : Alignment.topRight;
     final label = isRight ? '想继续看' : '换下一张';
     final icon = isRight
