@@ -765,6 +765,12 @@ class _RegionHeatSection extends StatelessWidget {
             icon: const Icon(Icons.restart_alt_rounded),
             label: Text('回到全部城市 · 当前 ${selectedCluster.label}'),
           ),
+        ] else ...[
+          const SizedBox(height: 10),
+          Text(
+            '拖动地图，或者点下面的城市名称，把 deck 切到那一片。',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ],
     );
@@ -1020,8 +1026,32 @@ class _GoogleMapRegionBoard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          children: [
+            Text(
+              selectedCluster == null ? '全国视角' : '${selectedCluster.label} 视角',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: const Color(0xFF18181B),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF4F4F5),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                '${clusters.fold<int>(0, (sum, item) => sum + item.totalCount)} 件事',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 300,
+          height: 320,
           child: clusters.isEmpty
               ? Center(
                   child: Text(
@@ -1044,45 +1074,35 @@ class _GoogleMapRegionBoard extends StatelessWidget {
                 ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 54,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: clusters.length + 1,
-            separatorBuilder: (_, _) => const SizedBox(width: 10),
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                final selected = selectedCluster == null;
-                return _CityFilterChip(
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _CityFilterChip(
+              label: '全部城市',
+              count: clusters.fold<int>(0, (sum, item) => sum + item.totalCount),
+              selected: selectedCluster == null,
+              onTap: () => onCityTap(
+                const _CityCluster(
+                  cityCode: '',
                   label: '全部城市',
-                  count: clusters.fold<int>(
-                    0,
-                    (sum, item) => sum + item.totalCount,
-                  ),
-                  selected: selected,
-                  onTap: () => onCityTap(
-                    const _CityCluster(
-                      cityCode: '',
-                      label: '全部城市',
-                      listings: <AppListing>[],
-                      taskCount: 0,
-                      exchangeCount: 0,
-                      longitude: 104.0,
-                      latitude: 35.0,
-                    ),
-                  ),
-                );
-              }
-
-              final cluster = clusters[index - 1];
-              return _CityFilterChip(
+                  listings: <AppListing>[],
+                  taskCount: 0,
+                  exchangeCount: 0,
+                  longitude: 104.0,
+                  latitude: 35.0,
+                ),
+              ),
+            ),
+            ...clusters.map(
+              (cluster) => _CityFilterChip(
                 label: cluster.label,
                 count: cluster.totalCount,
                 selected: cluster.cityCode == selectedCityCode,
                 onTap: () => onCityTap(cluster),
-              );
-            },
-          ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -1782,6 +1802,7 @@ class _DeckCard extends StatelessWidget {
     final accent = listing.isFeatured
         ? const Color(0xFFEC4899)
         : const Color(0xFF18181B);
+    final locationLabel = listing.locationText ?? _cityLabel(listing.cityCode);
 
     return Card(
       child: InkWell(
@@ -1845,7 +1866,7 @@ class _DeckCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            if (listing.isFeatured)
+                            if (listing.isFeatured && !compact)
                               Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: compact ? 8 : 10,
@@ -1887,36 +1908,6 @@ class _DeckCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: compact ? 8 : 16),
-                  Container(
-                    padding: EdgeInsets.all(compact ? 10 : 14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFAFAFA),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: const Color(0xFFE7E5E4)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          scene,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: accent,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: compact ? 4 : 6),
-                        Text(
-                          teaser,
-                          maxLines: compact ? 2 : 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: compact ? 8 : 14),
                   _MaybeHero(
                     enabled: !muted,
                     tag: _heroTag('title', listing.id),
@@ -1932,10 +1923,19 @@ class _DeckCard extends StatelessWidget {
                   ),
                   SizedBox(height: compact ? 4 : 10),
                   Text(
-                    listing.description,
-                    maxLines: compact ? 2 : 4,
+                    teaser,
+                    maxLines: compact ? 2 : 3,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+                  ),
+                  SizedBox(height: compact ? 8 : 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _DeckMetaPill(label: scene),
+                      _DeckMetaPill(label: locationLabel),
+                    ],
                   ),
                   const Spacer(),
                   Container(
@@ -1977,7 +1977,7 @@ class _DeckCard extends StatelessWidget {
                               Text(
                                 compact
                                     ? '${listing.applicationCount} 次回应'
-                                    : '${listing.publisherName} 发起',
+                                    : '${listing.publisherName} 发起 · ${listing.applicationCount} 次回应',
                                 style: theme.textTheme.bodyMedium,
                               ),
                             ],
@@ -2016,6 +2016,29 @@ class _MaybeHero extends StatelessWidget {
     }
 
     return Hero(tag: tag, child: child);
+  }
+}
+
+class _DeckMetaPill extends StatelessWidget {
+  const _DeckMetaPill({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4F4F5),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: const Color(0xFF52525B),
+        ),
+      ),
+    );
   }
 }
 
