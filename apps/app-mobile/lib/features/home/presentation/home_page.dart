@@ -214,9 +214,9 @@ class _HomePageState extends State<HomePage> {
                         return _StateCard(
                           title: activeFilterCount == 0 ? '广场还空着' : '没有找到匹配内容',
                           description: activeFilterCount == 0
-                              ? '后端已经接通，但当前还没有已发布内容。下一步可以先发一条试试。'
+                              ? '后端已经接通，但当前任务墙还没有新的小事。下一步可以先贴一条试试。'
                               : '换个关键词、服务方式或排序试试，或者清空筛选看全部内容。',
-                          actionLabel: activeFilterCount == 0 ? '去发布' : '清空筛选',
+                          actionLabel: activeFilterCount == 0 ? '去贴一件事' : '清空筛选',
                           onAction: activeFilterCount == 0
                               ? () {
                                   Navigator.of(context).push(
@@ -624,7 +624,7 @@ class _DiscoveryControlPanel extends StatelessWidget {
               onChanged: onSearchChanged,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search_rounded),
-                hintText: '搜任务标题、技能关键词、发布者、城市',
+                hintText: '搜任务标题、技能关键词、发起人、城市',
                 suffixIcon: search.isEmpty
                     ? null
                     : IconButton(
@@ -720,7 +720,7 @@ class _DiscoveryControlPanel extends StatelessWidget {
                     items: const [
                       DropdownMenuItem(
                         value: _ListingSortMode.newest,
-                        child: Text('最新发布'),
+                        child: Text('最新贴出'),
                       ),
                       DropdownMenuItem(
                         value: _ListingSortMode.hottest,
@@ -1502,7 +1502,7 @@ class _ListingCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               child: Text(
-                                isExchange ? '技能交换' : '任务悬赏',
+                                isExchange ? '技能交换' : '城市小事',
                                 style: theme.textTheme.bodySmall,
                               ),
                             ),
@@ -1655,7 +1655,7 @@ class _ListingCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${listing.publisherName} 发布',
+                          '${listing.publisherName} 发起',
                           style: theme.textTheme.bodyMedium,
                         ),
                         const SizedBox(height: 4),
@@ -1669,7 +1669,7 @@ class _ListingCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${listing.applicationCount} 人在看',
+                    '${listing.applicationCount} 次回应',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: accentColor,
                       fontWeight: FontWeight.w700,
@@ -1964,7 +1964,7 @@ class _DeckCard extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(999),
                                   ),
                                   child: Text(
-                                    isExchange ? '技能交换' : '任务悬赏',
+                                    isExchange ? '技能交换' : '城市小事',
                                     style: theme.textTheme.bodySmall,
                                   ),
                                 ),
@@ -2114,8 +2114,8 @@ class _DeckCard extends StatelessWidget {
                               SizedBox(height: compact ? 2 : 4),
                               Text(
                                 compact
-                                    ? '${listing.applicationCount} 人在看'
-                                    : '${listing.publisherName} 发布',
+                                    ? '${listing.applicationCount} 次回应'
+                                    : '${listing.publisherName} 发起',
                                 style: theme.textTheme.bodyMedium,
                               ),
                             ],
@@ -2458,7 +2458,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
   }
 
   addListingStory(
-    label: '本周最像电影开场的一件事',
+    label: '最像电影开场的一件事',
     listing: featuredStory,
     meta: featuredStory?.listingType == 'EXCHANGE' ? '精选交换' : '人工精选',
     icon: Icons.auto_awesome_rounded,
@@ -2469,7 +2469,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
     summaryBuilder: _featuredStorySummary,
   );
   addListingStory(
-    label: '这一周最温柔的托付',
+    label: '最温柔的一次托付',
     listing: warmStory.firstOrNull,
     meta: '城市陪伴',
     icon: Icons.favorite_rounded,
@@ -2478,7 +2478,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
     summaryBuilder: _warmStorySummary,
   );
   addListingStory(
-    label: '这件事居然真的有人发',
+    label: '这件事居然真的发生了',
     listing: wildStory.firstOrNull,
     meta: '故事感任务',
     icon: Icons.bolt_rounded,
@@ -2493,7 +2493,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
   if (completed != null) {
     cards.add(
       _StoryWallCardModel(
-        label: '已经被认真完成的一件小事',
+        label: '已经被认真做成的一件小事',
         title: completed.listingTitle,
         summary:
             '${_cityLabel(completed.cityCode).ifEmpty('这座城市')}刚刚完成了一笔真实合作，故事最可贵的地方不是“有人围观”，而是真的有人把这件事做成了。',
@@ -2543,13 +2543,13 @@ StoryCategory _storyCategoryFromLabel(String label) {
 
 String _storyBodyFromLabel(_StoryWallCardModel story) {
   switch (story.label) {
-    case '本周最像电影开场的一件事':
+    case '最像电影开场的一件事':
       return '这条任务会被放进故事墙，不是因为它像一条更贵的单子，而是因为它本身自带画面感。有人想把普通生活过得更像电影，有人想去一个城市角落留下证据，这类需求才是确任和传统兼职平台最不一样的地方。';
-    case '这一周最温柔的托付':
+    case '最温柔的一次托付':
       return '有些任务并不宏大，甚至没有那么“高效”，但它们很像城市里真实发生的求助和陪伴。故事墙想留下的，正是这种在现实生活里不太容易被平台认真对待的小需求。 ';
-    case '已经被认真完成的一件小事':
-      return '这笔合作已经完成，说明平台不只是停留在“有人发、有人看”，而是真的有人见面、有人交付、有人把一件事做成。逛逛内容流最值得沉淀的，就是这种已经发生过的真实协作。';
-    case '这件事居然真的有人发':
+    case '已经被认真做成的一件小事':
+      return '这笔合作已经完成，说明平台不只是停留在“有人贴、有人看”，而是真的有人见面、有人交付、有人把一件事做成。逛逛内容流最值得沉淀的，就是这种已经发生过的真实协作。';
+    case '这件事居然真的发生了':
       return '一些任务看起来离谱，但真正让人记住它们的，不是离谱本身，而是那种“这事居然真的会发生在城市里”的真实感。这样的任务更容易被讨论，也更适合变成照片和短视频内容。';
     default:
       return '每一条任务都不只是一个需求说明，它背后往往都藏着一段具体的城市生活。逛逛内容流的意义，就是把这些生活瞬间收集起来，让确任不只是一套撮合系统。';
@@ -2581,13 +2581,13 @@ String _listingMoodLabel(AppListing listing) {
   if (listing.listingType == 'EXCHANGE') {
     return '互相成全';
   }
-  return '城市小事';
+  return '认真托付';
 }
 
 String _listingTeaser(AppListing listing) {
   final text = listing.description.trim();
   if (text.isEmpty) {
-    return '有人想认真把一件小事做成，也在等一个愿意出现的人。';
+    return '有人把一件小事贴上了任务墙，也在等一个愿意出现的人。';
   }
   if (text.length <= 46) {
     return text;
