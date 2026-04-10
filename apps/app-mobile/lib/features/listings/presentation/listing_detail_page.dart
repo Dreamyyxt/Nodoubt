@@ -53,7 +53,7 @@ class ListingDetailPage extends StatelessWidget {
         .toList(growable: false);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('详情')),
+      appBar: AppBar(title: const Text('这件事的详情')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
         children: [
@@ -86,7 +86,7 @@ class ListingDetailPage extends StatelessWidget {
                       child: Text(
                         isExchange
                             ? 'SKILL SWAP'
-                            : 'TASK BOUNTY',
+                            : '城市任务墙',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: Colors.white,
                           letterSpacing: 1.1,
@@ -182,7 +182,7 @@ class ListingDetailPage extends StatelessWidget {
                               ? '推荐进行中'
                               : _featuredRemainingLabel(listing.featuredUntil),
                         ),
-                        _InlineHintChip(label: '${listing.applicationCount} 个申请'),
+                        _InlineHintChip(label: '${listing.applicationCount} 个回应'),
                         if (listing.orderCount > 0)
                           _InlineHintChip(label: '${listing.orderCount} 笔订单推进'),
                       ],
@@ -250,7 +250,7 @@ class ListingDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('这次合作是什么感觉', style: theme.textTheme.titleLarge),
+                  Text('这次托付到底是什么', style: theme.textTheme.titleLarge),
                   const SizedBox(height: 10),
                   Text(listing.description, style: theme.textTheme.bodyLarge),
                 ],
@@ -268,7 +268,7 @@ class ListingDetailPage extends StatelessWidget {
                     Text('同城相似任务', style: theme.textTheme.titleLarge),
                     const SizedBox(height: 10),
                     Text(
-                      '如果这条任务暂时不合适，也可以顺手看看同城还有哪些相似机会。',
+                      '如果这件事暂时不适合你，也可以顺手看看同城还有哪些相似的小事正在等人回应。',
                       style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 14),
@@ -332,7 +332,7 @@ class ListingDetailPage extends StatelessWidget {
                                       ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      '${item.applicationCount} 申请',
+                                      '${item.applicationCount} 回应',
                                       style: theme.textTheme.bodySmall,
                                     ),
                                   ],
@@ -489,7 +489,7 @@ class ListingDetailPage extends StatelessWidget {
                     Text('发布者操作', style: theme.textTheme.titleLarge),
                     const SizedBox(height: 8),
                     Text(
-                      '把收到的申请、编辑和关闭动作收在这里，方便你快速管理合作节奏。',
+                      '把收到的回应、编辑和关闭动作收在这里，方便你快速管理这件事的推进节奏。',
                       style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 16),
@@ -498,7 +498,7 @@ class ListingDetailPage extends StatelessWidget {
                       runSpacing: 12,
                       children: [
                         _DetailAction(
-                          label: '收到的申请',
+                          label: '收到的回应',
                           icon: Icons.inbox_outlined,
                           filled: true,
                           onTap: () => _viewApplications(context),
@@ -552,14 +552,14 @@ class ListingDetailPage extends StatelessWidget {
                       child: Text(
                         isExchange
                             ? '这条交换正在被优先撮合，尽量把你能提供的内容写具体一点，会更容易被接受。'
-                            : '这条任务正在被优先推动成交，建议立即申请并写清楚你能怎么完成。${listing.applicationCount > 0 ? ' 当前已有 ${listing.applicationCount} 个人在跟进。' : ''}',
+                            : '这条任务正在被优先推动成交，建议立刻回应，并写清楚你会怎么把它做成。${listing.applicationCount > 0 ? ' 当前已有 ${listing.applicationCount} 个人在跟进。' : ''}',
                       ),
                     ),
                   FilledButton.icon(
                     onPressed: () => _applyToListing(context),
                     icon: const Icon(Icons.send_outlined),
                     label: Text(
-                      isExchange ? '立即发起交换' : '立即申请这条任务',
+                      isExchange ? '立即发起交换' : '立即回应这件事',
                     ),
                   ),
                 ],
@@ -593,11 +593,11 @@ class ListingDetailPage extends StatelessWidget {
       }
 
       messenger.showSnackBar(
-        const SnackBar(content: Text('申请已提交，可以在“申请”页查看状态。')),
+        const SnackBar(content: Text('回应已发出，可以在“回应”页查看状态。')),
       );
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text('申请失败：$error')),
+        SnackBar(content: Text('回应失败：$error')),
       );
     }
   }
@@ -1017,7 +1017,7 @@ class _ApplicationDialogState extends State<_ApplicationDialog> {
     return AlertDialog(
       scrollable: true,
       title: Text(
-        _isExchange ? '发起交换申请' : '提交申请',
+        _isExchange ? '发起交换回应' : '发出回应',
       ),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 460),
@@ -1030,7 +1030,7 @@ class _ApplicationDialogState extends State<_ApplicationDialog> {
               Text(
                 _isExchange
                     ? '告诉对方你能提供什么、希望怎么交换。'
-                    : '简单介绍一下你能怎么帮忙，以及你希望如何合作。',
+                    : '简单说说你会怎么接住这件事，以及你希望如何合作。',
               ),
               const SizedBox(height: 14),
               TextFormField(
@@ -1040,13 +1040,13 @@ class _ApplicationDialogState extends State<_ApplicationDialog> {
                 decoration: InputDecoration(
                   labelText: _isExchange
                       ? '交换说明'
-                      : '申请说明',
+                      : '回应内容',
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return _isExchange
                         ? '请填写你的交换说明'
-                        : '请简单介绍一下你能怎么帮忙';
+                        : '请简单介绍一下你会怎么接住这件事';
                   }
                   return null;
                 },
@@ -1075,7 +1075,7 @@ class _ApplicationDialogState extends State<_ApplicationDialog> {
           child: Text(
             _isExchange
                 ? '发起交换'
-                : '发送申请',
+                : '发送回应',
           ),
         ),
       ],
