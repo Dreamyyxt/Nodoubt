@@ -5,7 +5,6 @@ import '../../../core/session/app_scope.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/amap_geocoder.dart';
 import '../../../core/utils/city_coordinates.dart';
-import '../../../core/utils/pricing_helper.dart';
 import '../../listings/presentation/my_listings_page.dart';
 import '../models/create_listing_input.dart';
 import '../models/edit_listing_args.dart';
@@ -45,13 +44,6 @@ class _PublishPageState extends State<PublishPage> {
   String? _feedbackMessage;
 
   bool get _isEditing => widget.initialDraft != null;
-  bool get _eligibleForCuratedOps {
-    final budget = double.tryParse(_budgetController.text.trim()) ?? 0;
-    return _listingType == PublishListingType.task &&
-        budget >= 300 &&
-        _locationController.text.trim().isNotEmpty;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -101,15 +93,9 @@ class _PublishPageState extends State<PublishPage> {
     final taskBudgetType = _budgetType == PublishBudgetType.freeExchange
         ? PublishBudgetType.fixed
         : _budgetType;
-    final parsedBudget = double.tryParse(_budgetController.text.trim()) ?? 0;
-    final pricing = PricingHelper.estimate(
-      baseAmount: parsedBudget,
-      isUrgent: _isUrgent,
-    );
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? '编辑发布' : '发布创作台'),
+        title: Text(_isEditing ? '修改这件事' : '贴一件事到任务墙'),
       ),
       body: Form(
         key: _formKey,
@@ -156,7 +142,7 @@ class _PublishPageState extends State<PublishPage> {
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
-                            _isEditing ? 'EDIT MODE' : 'CREATOR STUDIO',
+                            _isEditing ? 'EDIT MODE' : 'CITY TASK WALL',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: Colors.white,
                               letterSpacing: 1.1,
@@ -166,7 +152,7 @@ class _PublishPageState extends State<PublishPage> {
                         const SizedBox(height: 18),
                         Text(
                           isTask
-                              ? '把想托付的事\n写得让人想认真帮你。'
+                              ? '把想托付的事\n写得让人愿意接住。'
                               : '把交换写得\n让人一眼想聊。',
                           style: theme.textTheme.headlineLarge?.copyWith(
                             color: Colors.white,
@@ -176,7 +162,7 @@ class _PublishPageState extends State<PublishPage> {
                         const SizedBox(height: 12),
                         Text(
                           isTask
-                              ? '确任不是发杂活的地方。把你真正想完成的那件小事写清楚，才更容易遇到对的人。'
+                              ? '把一件生活里的小事写清楚，它才会被一个真正愿意回应的人看到。'
                               : '讲清楚你能提供什么、你想换什么，交换成功率会高很多。',
                           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                         ),
@@ -187,7 +173,7 @@ class _PublishPageState extends State<PublishPage> {
                           children: [
                             _IdeaChip(
                               label: isTask
-                                  ? '先写画面感'
+                                  ? '先写清场景'
                                   : '说清互换价值',
                             ),
                             _IdeaChip(label: '让人快速代入'),
@@ -268,7 +254,7 @@ class _PublishPageState extends State<PublishPage> {
             const SizedBox(height: 18),
             _SectionCard(
               title: '一句话抓住人',
-              subtitle: '先别像发兼职，把这件事写得像真实生活里的一次认真托付。',
+              subtitle: '别像发兼职，把这件事写得像真实生活里的一次认真托付。',
               tint: palette.primarySoft,
               child: Column(
                 children: [
@@ -305,8 +291,8 @@ class _PublishPageState extends State<PublishPage> {
             ),
             const SizedBox(height: 14),
             _SectionCard(
-              title: '合作设定',
-              subtitle: '城市、方式、地点这些信息，会影响匹配效率。',
+              title: '它会发生在哪',
+              subtitle: '城市、方式和地点，会决定谁更容易看到并接住这件事。',
               tint: palette.tertiarySoft,
               child: Column(
                 children: [
@@ -367,8 +353,8 @@ class _PublishPageState extends State<PublishPage> {
               child: isTask
                   ? _SectionCard(
                       key: const ValueKey('task'),
-                      title: '预算与紧迫度',
-                      subtitle: '有预算感的任务，会让人更快判断要不要接。',
+                      title: '给一点现实信息',
+                      subtitle: '预算和时间感写得越清楚，越容易让人判断自己能不能接住。',
                       tint: palette.secondarySoft,
                       child: Column(
                         children: [
@@ -404,40 +390,6 @@ class _PublishPageState extends State<PublishPage> {
                             ),
                             onChanged: (_) {
                               setState(() {});
-                            },
-                          ),
-                          const SizedBox(height: 14),
-                          _MonetizationHintCard(
-                            title: '成交预估',
-                            subtitle: '前期建议先用低抽佣换样本，把前 100 单先做出来。',
-                            rows: [
-                              _PricingRowData(
-                                label: '客户预计支付',
-                                value: '¥${pricing.clientTotal.toStringAsFixed(0)}',
-                              ),
-                              _PricingRowData(
-                                label: '平台服务费 (${(pricing.serviceFeeRate * 100).toStringAsFixed(0)}%)',
-                                value: '¥${pricing.serviceFee.toStringAsFixed(0)}',
-                              ),
-                              _PricingRowData(
-                                label: '任务猎人预计到手',
-                                value: '¥${pricing.hunterPayout.toStringAsFixed(0)}',
-                              ),
-                              if (_isUrgent)
-                                _PricingRowData(
-                                  label: '加急推荐位',
-                                  value: '¥${pricing.urgentBoostFee.toStringAsFixed(1)}',
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 14),
-                          _ExposurePlanCard(
-                            isUrgent: _isUrgent,
-                            eligibleForCuratedOps: _eligibleForCuratedOps,
-                            onUrgentTap: () {
-                              setState(() {
-                                _isUrgent = !_isUrgent;
-                              });
                             },
                           ),
                         ],
@@ -489,7 +441,7 @@ class _PublishPageState extends State<PublishPage> {
                 title: const Text('加急发布'),
                 subtitle: Text(
                   isTask
-                      ? '适合今晚就要开始的任务'
+                      ? '适合今晚就想开始的事'
                       : '适合想尽快完成撮合的交换',
                 ),
                 onChanged: (value) {
@@ -539,7 +491,7 @@ class _PublishPageState extends State<PublishPage> {
           onPressed: _isSubmitting ? null : () => _submit(context),
           icon: Icon(_isEditing ? Icons.save_outlined : Icons.rocket_launch_outlined),
           label: Text(
-            _isSubmitting ? '提交中...' : (_isEditing ? '保存修改' : '立即发布'),
+            _isSubmitting ? '提交中...' : (_isEditing ? '保存这件事' : '贴上任务墙'),
           ),
         ),
       ),
@@ -625,7 +577,7 @@ class _PublishPageState extends State<PublishPage> {
           MaterialPageRoute(
             builder: (_) => const MyListingsPage(
               initialFilter: MyListingsFilter.pendingReview,
-              noticeMessage: '发布已提交，当前会进入待审核状态。',
+              noticeMessage: '这件事已经贴上任务墙，当前会先进入待审核状态。',
             ),
           ),
         );
@@ -639,195 +591,6 @@ class _PublishPageState extends State<PublishPage> {
   }
 }
 
-class _MonetizationHintCard extends StatelessWidget {
-  const _MonetizationHintCard({
-    required this.title,
-    required this.subtitle,
-    required this.rows,
-  });
-
-  final String title;
-  final String subtitle;
-  final List<_PricingRowData> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F7FF),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE9E6FF)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 6),
-          Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 14),
-          ...rows.map(
-            (row) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(row.label, style: Theme.of(context).textTheme.bodyMedium),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    row.value,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExposurePlanCard extends StatelessWidget {
-  const _ExposurePlanCard({
-    required this.isUrgent,
-    required this.eligibleForCuratedOps,
-    required this.onUrgentTap,
-  });
-
-  final bool isUrgent;
-  final bool eligibleForCuratedOps;
-  final VoidCallback onUrgentTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFBF5),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF8D8A8)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('曝光选项', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 6),
-          Text(
-            '前期不急着靠抽佣赚钱，但要把值得运营的任务明确露出来。',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 14),
-          _ExposureTile(
-            title: '普通发布',
-            subtitle: '进入城市广场，按发布时间和当前筛选正常露出。',
-            badge: '默认',
-            active: !isUrgent,
-            tone: const Color(0xFFE9E6FF),
-            onTap: () {
-              if (isUrgent) {
-                onUrgentTap();
-              }
-            },
-          ),
-          const SizedBox(height: 10),
-          _ExposureTile(
-            title: '加急推荐位',
-            subtitle: '适合今晚就要开始的任务，会进入加急流和后台优先关注。',
-            badge: '¥9.9',
-            active: isUrgent,
-            tone: const Color(0xFFFFE4C7),
-            onTap: onUrgentTap,
-          ),
-          const SizedBox(height: 10),
-          _ExposureTile(
-            title: '人工精选候选',
-            subtitle: eligibleForCuratedOps
-                ? '这条任务已经满足“预算 >= 300 且地点明确”，会进入后台高价值任务池。'
-                : '预算做到 300+，再把地点写明确，就会进入后台高价值任务池。',
-            badge: eligibleForCuratedOps ? '已进入' : '待达标',
-            active: eligibleForCuratedOps,
-            tone: const Color(0xFFDCFCE7),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExposureTile extends StatelessWidget {
-  const _ExposureTile({
-    required this.title,
-    required this.subtitle,
-    required this.badge,
-    required this.active,
-    required this.tone,
-    this.onTap,
-  });
-
-  final String title;
-  final String subtitle;
-  final String badge;
-  final bool active;
-  final Color tone;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final child = AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: active ? tone.withValues(alpha: 0.72) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: active ? tone.withValues(alpha: 0.96) : const Color(0xFFE5E7EB),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleSmall),
-                const SizedBox(height: 4),
-                Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.82),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Text(
-              badge,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (onTap == null) {
-      return child;
-    }
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: child,
-      ),
-    );
-  }
-}
 
 class _TaskCategoryChip extends StatelessWidget {
   const _TaskCategoryChip({
@@ -895,16 +658,6 @@ String _taskCategoryCategoryCode(PublishTaskCategory category) {
     case PublishTaskCategory.skill:
       return 'skill';
   }
-}
-
-class _PricingRowData {
-  const _PricingRowData({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
 }
 
 class _ModeCard extends StatelessWidget {
