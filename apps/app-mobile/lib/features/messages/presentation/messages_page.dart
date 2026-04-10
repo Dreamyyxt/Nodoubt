@@ -47,7 +47,7 @@ class _MessagesPageState extends State<MessagesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('消息'),
+        title: const Text('回应'),
         actions: [
           IconButton(
             onPressed: controller.refreshAll,
@@ -77,7 +77,7 @@ class _MessagesPageState extends State<MessagesPage> {
                   TextField(
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.search_rounded),
-                      hintText: '搜索对话对象 / 任务标题 / 城市',
+                      hintText: '搜索回应对象 / 任务标题 / 城市',
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -96,12 +96,12 @@ class _MessagesPageState extends State<MessagesPage> {
                         onTap: () => setState(() => _lane = _ConversationLane.all),
                       ),
                       _LaneChip(
-                        label: '订单推进',
+                        label: '合作推进',
                         selected: _lane == _ConversationLane.orders,
                         onTap: () => setState(() => _lane = _ConversationLane.orders),
                       ),
                       _LaneChip(
-                        label: '申请往来',
+                        label: '回应往来',
                         selected: _lane == _ConversationLane.applications,
                         onTap: () =>
                             setState(() => _lane = _ConversationLane.applications),
@@ -165,13 +165,13 @@ class _MessagesHero extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              'Conversation hub',
+              'RESPONSE WALL',
               style: theme.textTheme.bodySmall?.copyWith(color: Colors.white),
             ),
           ),
           const SizedBox(height: 14),
           Text(
-            '把申请、建单、交付和确认，收进一条真正能追踪的合作会话。',
+            '把回应、建单、交付和确认，收进一条真正能追踪的合作记录。',
             style: theme.textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               height: 1.08,
@@ -179,7 +179,7 @@ class _MessagesHero extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '现在先用系统事件和关键留言承接最小聊天版，后面可以再平滑接入即时消息。',
+            '这里先承接你发出的回应、你收到的反馈，以及一件事一步步被做成的过程。',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.88),
             ),
@@ -189,9 +189,9 @@ class _MessagesHero extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: [
-              _HeroStat(label: '会话', value: '$totalCount'),
-              _HeroStat(label: '订单推进', value: '$orderCount'),
-              _HeroStat(label: '申请往来', value: '$applicationCount'),
+              _HeroStat(label: '回应记录', value: '$totalCount'),
+              _HeroStat(label: '合作推进', value: '$orderCount'),
+              _HeroStat(label: '我的回应', value: '$applicationCount'),
             ],
           ),
         ],
@@ -363,7 +363,7 @@ class _ConversationCard extends StatelessWidget {
                     runSpacing: 8,
                     children: [
                       _MetaChip(
-                        label: item.kind == _ConversationKind.order ? '订单推进' : '申请往来',
+                        label: item.kind == _ConversationKind.order ? '合作推进' : '回应往来',
                       ),
                       _MetaChip(label: item.statusLabel),
                       if (item.cityLabel.isNotEmpty) _MetaChip(label: item.cityLabel),
@@ -474,7 +474,7 @@ class _ConversationDetailPageState extends State<_ConversationDetailPage> {
                     children: [
                       _InvertedChip(label: widget.item.statusLabel),
                       _InvertedChip(
-                        label: widget.item.kind == _ConversationKind.order ? '订单会话' : '申请会话',
+                        label: widget.item.kind == _ConversationKind.order ? '合作记录' : '回应记录',
                       ),
                       if (widget.item.cityLabel.isNotEmpty)
                         _InvertedChip(label: widget.item.cityLabel),
@@ -509,7 +509,7 @@ class _ConversationDetailPageState extends State<_ConversationDetailPage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            '这是聊天最小版，先把关键留言、申请状态和订单推进节点收进一条可追踪会话里。',
+                            '这里先把关键留言、回应状态和合作推进节点收进一条可追踪记录里。',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),

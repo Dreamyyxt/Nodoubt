@@ -193,8 +193,8 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 22),
                 if (featuredListings.isNotEmpty) ...[
                   _SectionPanel(
-                    title: '推荐任务',
-                    subtitle: '这里会优先展示后台人工精选和值得先运营的任务。',
+                    title: '先看这些任务',
+                    subtitle: '它们更有画面感、更值得被拍下来，也更像确任想留下的城市协作。',
                     accent: const Color(0xFFF4F8FF),
                     child: _FeaturedListingsSection(listings: featuredListings),
                   ),
@@ -282,8 +282,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 22),
                 _SectionPanel(
-                  title: '任务故事墙',
-                  subtitle: '把真实任务沉淀成更有照片感和短视频感的故事卡。',
+                  title: '本周城市小事',
+                  subtitle: '先看那些最像电影开场、最温柔、也最值得被讲出来的小事。',
                   accent: const Color(0xFFF5F3FF),
                   action: TextButton.icon(
                     onPressed: () {
@@ -465,7 +465,7 @@ class _HomeHero extends StatelessWidget {
                 ),
                 const SizedBox(height: 22),
                 Text(
-                  '先把任务广场\n做得干净、好逛、好判断。',
+                  '把一件小事\n认真托付给一个对的人。',
                   style: theme.textTheme.headlineLarge?.copyWith(
                     color: Colors.white,
                     fontSize: 42,
@@ -473,7 +473,7 @@ class _HomeHero extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '在一个足够克制的首页里，先看任务，再看区域，再看故事。',
+                  '这里不是找兼职，而是帮你在城市里，找到愿意陪你把这件事做成的人。',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: const Color(0xFFF1F2FF),
                   ),
@@ -491,7 +491,7 @@ class _HomeHero extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          '搜任务、搜技能、搜这座城市正在发生的协作',
+                          '搜陪伴、搜记录、搜灵感，也搜这座城市刚刚发生的小故事',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                           ),
@@ -510,13 +510,13 @@ class _HomeHero extends StatelessWidget {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: const [
-                      _StoryTag(label: '海报设计'),
+                      _StoryTag(label: '陪我看展'),
                       SizedBox(width: 8),
-                      _StoryTag(label: '简历优化'),
+                      _StoryTag(label: '城市打卡'),
                       SizedBox(width: 8),
-                      _StoryTag(label: '活动协助'),
+                      _StoryTag(label: '生活照记录'),
                       SizedBox(width: 8),
-                      _StoryTag(label: '摄影修图'),
+                      _StoryTag(label: '把小事做成'),
                     ],
                   ),
                 ),
@@ -952,7 +952,7 @@ class _StoryWallSection extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 254,
+      height: 286,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) => _StoryWallCard(story: stories[index]),
@@ -971,7 +971,7 @@ class _FeaturedListingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 214,
+      height: 262,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: listings.length,
@@ -1010,7 +1010,10 @@ class _FeaturedListingsSection extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -1025,8 +1028,7 @@ class _FeaturedListingsSection extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Spacer(),
-                            if (item.isFeatured && item.featuredUntil != null) ...[
+                            if (item.isFeatured && item.featuredUntil != null)
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
@@ -1043,8 +1045,6 @@ class _FeaturedListingsSection extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                            ],
                             if (item.budgetAmount != null)
                               Text(
                                 '¥${item.budgetAmount!.toStringAsFixed(0)}',
@@ -1086,20 +1086,20 @@ class _FeaturedListingsSection extends StatelessWidget {
                           ),
                         ],
                         const Spacer(),
-                        Row(
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
                           children: [
                             _MiniMetric(
                               label: '申请',
                               value: '${item.applicationCount}',
                               dark: true,
                             ),
-                            const SizedBox(width: 10),
                             _MiniMetric(
                               label: '优先级',
                               value: '${item.featuredPriority}',
                               dark: true,
                             ),
-                            const SizedBox(width: 10),
                             _MiniMetric(
                               label: item.orderCount > 0 ? '订单' : '城市',
                               value: item.orderCount > 0
@@ -1159,7 +1159,7 @@ class _StoryWallCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 270,
+      width: 286,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
@@ -1182,7 +1182,9 @@ class _StoryWallCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -1201,7 +1203,6 @@ class _StoryWallCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -1711,6 +1712,9 @@ class _ListingCard extends StatelessWidget {
     final accentColor = isExchange
         ? const Color(0xFF06B6D4)
         : const Color(0xFFF97316);
+    final mood = _listingMoodLabel(listing);
+    final teaser = _listingTeaser(listing);
+    final scene = _sceneLabel(listing);
 
     return Card(
       child: InkWell(
@@ -1722,51 +1726,78 @@ class _ListingCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Hero(
-                    tag: _heroTag('pill', listing.id),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
+                  Expanded(
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        Hero(
+                          tag: _heroTag('pill', listing.id),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isExchange
+                                    ? palette.tertiarySoft
+                                    : palette.secondarySoft,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                isExchange ? '技能交换' : '任务悬赏',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          color: isExchange
-                              ? palette.tertiarySoft
-                              : palette.secondarySoft,
-                          borderRadius: BorderRadius.circular(999),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: accentColor.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Text(
+                            mood,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: accentColor,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
-                        child: Text(
-                          isExchange ? '技能交换' : '任务悬赏',
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
+                        if (listing.isFeatured)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEEF2FF),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(color: const Color(0xFFC7D2FE)),
+                            ),
+                            child: Text(
+                              '推荐',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: const Color(0xFF4338CA),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  if (listing.isFeatured) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEEF2FF),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: const Color(0xFFC7D2FE)),
-                      ),
-                      child: Text(
-                        '推荐',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: const Color(0xFF4338CA),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
+                  const SizedBox(width: 10),
                   Container(
                     width: 34,
                     height: 34,
@@ -1781,6 +1812,36 @@ class _ListingCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      scene,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: accentColor,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      teaser,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: const Color(0xFF5B3A15),
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               Hero(
@@ -1823,18 +1884,6 @@ class _ListingCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 6,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(
-                    value: isExchange ? 0.58 : 0.74,
-                    backgroundColor: accentColor.withValues(alpha: 0.12),
-                    valueColor: AlwaysStoppedAnimation<Color>(accentColor),
-                  ),
-                ),
-              ),
               const SizedBox(height: 14),
               Row(
                 children: [
@@ -1849,13 +1898,30 @@ class _ListingCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      '${listing.publisherName} 发布',
-                      style: theme.textTheme.bodyMedium,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${listing.publisherName} 发布',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          scene,
+                          style: theme.textTheme.bodySmall,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
-                  if (listing.cityCode != null)
-                    Text(listing.cityCode!, style: theme.textTheme.bodySmall),
+                  Text(
+                    '${listing.applicationCount} 人在看',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: accentColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -2096,6 +2162,9 @@ class _DeckCard extends StatelessWidget {
         ? const Color(0xFF06B6D4)
         : const Color(0xFFF97316);
     final soft = isExchange ? palette.tertiarySoft : palette.secondarySoft;
+    final mood = _listingMoodLabel(listing);
+    final teaser = _listingTeaser(listing);
+    final scene = _sceneLabel(listing);
 
     return Card(
       child: InkWell(
@@ -2120,50 +2189,74 @@ class _DeckCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _MaybeHero(
-                        enabled: !muted,
-                        tag: _heroTag('pill', listing.id),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: compact ? 9 : 12,
-                              vertical: compact ? 6 : 8,
+                      Expanded(
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _MaybeHero(
+                              enabled: !muted,
+                              tag: _heroTag('pill', listing.id),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: compact ? 9 : 12,
+                                    vertical: compact ? 6 : 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.78),
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    isExchange ? '技能交换' : '任务悬赏',
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
+                              ),
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.78),
-                              borderRadius: BorderRadius.circular(999),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: compact ? 8 : 10,
+                                vertical: compact ? 5 : 7,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.82),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                mood,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: accent,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ),
-                            child: Text(
-                              isExchange ? '技能交换' : '任务悬赏',
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ),
+                            if (listing.isFeatured)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: compact ? 8 : 10,
+                                  vertical: compact ? 5 : 7,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEEF2FF),
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(color: const Color(0xFFC7D2FE)),
+                                ),
+                                child: Text(
+                                  '推荐',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: const Color(0xFF4338CA),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      if (listing.isFeatured) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: compact ? 8 : 10,
-                            vertical: compact ? 5 : 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEEF2FF),
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(color: const Color(0xFFC7D2FE)),
-                          ),
-                          child: Text(
-                            '推荐',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFF4338CA),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                      const Spacer(),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -2183,6 +2276,35 @@ class _DeckCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: compact ? 8 : 16),
+                  Container(
+                    padding: EdgeInsets.all(compact ? 10 : 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.74),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          scene,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: accent,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: compact ? 4 : 6),
+                        Text(
+                          teaser,
+                          maxLines: compact ? 2 : 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: compact ? 8 : 14),
                   _MaybeHero(
                     enabled: !muted,
                     tag: _heroTag('title', listing.id),
@@ -2238,7 +2360,9 @@ class _DeckCard extends StatelessWidget {
                               ),
                               SizedBox(height: compact ? 2 : 4),
                               Text(
-                                '${listing.publisherName} 发布',
+                                compact
+                                    ? '${listing.applicationCount} 人在看'
+                                    : '${listing.publisherName} 发布',
                                 style: theme.textTheme.bodyMedium,
                               ),
                             ],
@@ -2627,7 +2751,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
   }
 
   addListingStory(
-    label: '本周值得被拍成封面的任务',
+    label: '本周最像电影开场的一件事',
     listing: featuredStory,
     meta: featuredStory?.listingType == 'EXCHANGE' ? '精选交换' : '人工精选',
     icon: Icons.auto_awesome_rounded,
@@ -2638,7 +2762,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
     summaryBuilder: _featuredStorySummary,
   );
   addListingStory(
-    label: '本周温柔任务',
+    label: '这一周最温柔的托付',
     listing: warmStory.firstOrNull,
     meta: '城市陪伴',
     icon: Icons.favorite_rounded,
@@ -2647,7 +2771,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
     summaryBuilder: _warmStorySummary,
   );
   addListingStory(
-    label: '本周离谱但真',
+    label: '这件事居然真的有人发',
     listing: wildStory.firstOrNull,
     meta: '故事感任务',
     icon: Icons.bolt_rounded,
@@ -2662,7 +2786,7 @@ List<_StoryWallCardModel> _buildStoryWallStories({
   if (completed != null) {
     cards.add(
       _StoryWallCardModel(
-        label: '本周合作故事',
+        label: '已经被认真完成的一件小事',
         title: completed.listingTitle,
         summary:
             '${_cityLabel(completed.cityCode).ifEmpty('这座城市')}刚刚完成了一笔真实合作，故事最可贵的地方不是“有人围观”，而是真的有人把这件事做成了。',
@@ -2701,10 +2825,10 @@ StoryCategory _storyCategoryFromLabel(String label) {
   if (label.contains('温柔')) {
     return StoryCategory.warm;
   }
-  if (label.contains('离谱')) {
+  if (label.contains('居然')) {
     return StoryCategory.wild;
   }
-  if (label.contains('合作')) {
+  if (label.contains('完成')) {
     return StoryCategory.completed;
   }
   return StoryCategory.interesting;
@@ -2712,13 +2836,13 @@ StoryCategory _storyCategoryFromLabel(String label) {
 
 String _storyBodyFromLabel(_StoryWallCardModel story) {
   switch (story.label) {
-    case '本周值得被拍成封面的任务':
+    case '本周最像电影开场的一件事':
       return '这条任务会被放进故事墙，不是因为它像一条更贵的单子，而是因为它本身自带画面感。有人想把普通生活过得更像电影，有人想去一个城市角落留下证据，这类需求才是确任和传统兼职平台最不一样的地方。';
-    case '本周温柔任务':
+    case '这一周最温柔的托付':
       return '有些任务并不宏大，甚至没有那么“高效”，但它们很像城市里真实发生的求助和陪伴。故事墙想留下的，正是这种在现实生活里不太容易被平台认真对待的小需求。 ';
-    case '本周合作故事':
+    case '已经被认真完成的一件小事':
       return '这笔合作已经完成，说明平台不只是停留在“有人发、有人看”，而是真的有人见面、有人交付、有人把一件事做成。逛逛内容流最值得沉淀的，就是这种已经发生过的真实协作。';
-    case '本周离谱但真实':
+    case '这件事居然真的有人发':
       return '一些任务看起来离谱，但真正让人记住它们的，不是离谱本身，而是那种“这事居然真的会发生在城市里”的真实感。这样的任务更容易被讨论，也更适合变成照片和短视频内容。';
     default:
       return '每一条任务都不只是一个需求说明，它背后往往都藏着一段具体的城市生活。逛逛内容流的意义，就是把这些生活瞬间收集起来，让确任不只是一套撮合系统。';
@@ -2738,6 +2862,45 @@ String _featuredRemainingLabel(DateTime? featuredUntil) {
   }
   final days = (remaining / 24).ceil();
   return '$days 天推荐期';
+}
+
+String _sceneLabel(AppListing listing) {
+  final location = listing.locationText?.trim();
+  if (location != null && location.isNotEmpty) {
+    return location;
+  }
+  return _cityLabel(listing.cityCode).ifEmpty('这座城市的某个角落');
+}
+
+String _listingMoodLabel(AppListing listing) {
+  final text = '${listing.title} ${listing.description}';
+  if (text.contains('生日') || text.contains('电影')) {
+    return '仪式感';
+  }
+  if (text.contains('晚饭') || text.contains('陪') || text.contains('听我')) {
+    return '陪伴感';
+  }
+  if (text.contains('记录') || text.contains('照片') || text.contains('明信片')) {
+    return '记录感';
+  }
+  if (text.contains('生活') || text.contains('房间')) {
+    return '生活感';
+  }
+  if (listing.listingType == 'EXCHANGE') {
+    return '互相成全';
+  }
+  return '城市小事';
+}
+
+String _listingTeaser(AppListing listing) {
+  final text = listing.description.trim();
+  if (text.isEmpty) {
+    return '有人想认真把一件小事做成，也在等一个愿意出现的人。';
+  }
+  if (text.length <= 46) {
+    return text;
+  }
+  return '${text.substring(0, 46)}...';
 }
 
 int _storyScore(AppListing listing) {

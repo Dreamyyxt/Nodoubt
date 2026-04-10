@@ -338,53 +338,60 @@ const taskTemplates = [
     budgetRange: [99, 199],
   },
   {
-    title: '替我去一个城市角落打卡并帮我带回十张有故事感的照片',
+    title: '替我去一个城市角落打卡，并帮我带回十张有故事感的照片',
     description:
       '我最近在做一个“城市小角落”相册计划，想收集那些不那么热门、但看起来有情绪的地方。希望你会观察、会讲述。',
     serviceMode: 'OFFLINE',
     budgetRange: [120, 360],
   },
   {
-    title: '帮我替一个迟迟说不出口的人，送一束花并带一句体面的话',
-    description:
-      '不是恶作剧，也不是情感纠纷。只是想找一个表达清楚、态度温和的人，帮我把一段关系认真收个尾。',
-    serviceMode: 'OFFLINE',
-    budgetRange: [150, 320],
-  },
-  {
-    title: '帮我陪家里长辈去一次医院或办事窗口，负责耐心解释和流程陪同',
-    description:
-      '事情本身不复杂，但老人家一个人会紧张。希望你稳一点、细心一点，愿意把流程讲明白。',
-    serviceMode: 'OFFLINE',
-    budgetRange: [120, 280],
-  },
-  {
-    title: '帮我把一场很普通的生日过得稍微像电影一点',
+    title: '陪我把一场很普通的生日，过得稍微像电影一点',
     description:
       '不需要你策划大场面，只希望你能帮我一起想一个小小流程、布置一点氛围，再在关键时刻留下几张会让我以后翻出来还会笑的照片。',
     serviceMode: 'OFFLINE',
     budgetRange: [168, 420],
   },
   {
-    title: '陪我完成一个一直想做但一个人迟迟没开始的小计划',
+    title: '陪我完成一个一直想做、但一个人迟迟没开始的小计划',
     description:
       '可能是晨跑、学轮滑、第一次逛菜市场、第一次去跳蚤市场摆摊。想找一个愿意认真陪我开始的人。',
     serviceMode: 'OFFLINE',
     budgetRange: [88, 240],
   },
   {
-    title: '帮我把租来的房间改得更像“我在这里生活”，而不是临时住一下',
+    title: '帮我把租来的房间，改得更像“我在这里生活”',
     description:
       '不需要你是专业设计师，但希望你审美在线，能陪我逛一圈，帮我挑几个便宜但不敷衍的小东西。',
     serviceMode: 'OFFLINE',
     budgetRange: [150, 380],
   },
   {
-    title: '替我记录一场小活动，重点拍人与人之间的感觉，不只是流程',
+    title: '替我记录一场小活动，重点拍人与人之间的感觉',
     description:
       '活动不大，但我想留下的是大家真的在互动、真的开心、真的有点被打动的瞬间。',
     serviceMode: 'OFFLINE',
     budgetRange: [220, 520],
+  },
+  {
+    title: '替未来的我，留下一张今天认真活过的城市明信片',
+    description:
+      '我想让今天这座城市替我留下一点证据。你可以帮我挑一个地方、拍几张照片、再写一句像留言一样的话。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [88, 260],
+  },
+  {
+    title: '陪我去一家我想去很久的店，顺手帮我记录一下感受',
+    description:
+      '我不是想找探店博主，而是想找一个会观察细节、愿意认真体验的人。最后帮我留下几张照片和一句你自己的感受就够了。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [99, 220],
+  },
+  {
+    title: '帮我把一次普通见面，变得更有一点仪式感',
+    description:
+      '不用很贵，也不用很复杂。只希望你能帮我想一个节奏、一点布置，或者一句更体面的话，让这次见面不只是“来了就散”。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [120, 320],
   },
   {
     title: '帮我临时照看半天猫咪，顺便陪它认真玩一会儿',
@@ -393,15 +400,36 @@ const taskTemplates = [
     serviceMode: 'OFFLINE',
     budgetRange: [80, 220],
   },
+  {
+    title: '替我去花市挑一束今天状态最好的花，并写一句像留言一样的话',
+    description:
+      '我想给今天留一点柔软的证据。希望你愿意认真挑花、拍下它的样子，再替我写一句像这座城市偷偷回给我的话。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [88, 240],
+  },
+  {
+    title: '陪我去陌生街区散一次步，帮我找到三个会想再来的角落',
+    description:
+      '我想从熟悉的路线里逃出去一下。希望你有一点观察力，也愿意陪我慢慢走，最后留下三个今天会记住的小地方。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [99, 260],
+  },
+  {
+    title: '帮我把一次想说又不敢说的话，变成更体面的一次见面',
+    description:
+      '我不是要你替我说，而是想找一个愿意帮我顺顺情绪、想想节奏、让我在真正见面前不要那么慌的人。',
+    serviceMode: 'OFFLINE',
+    budgetRange: [120, 300],
+  },
 ];
 
 const exchangeTemplates = [
   {
-    title: '给你拍一组生活感照片，换你帮我把简历改得更像我',
+    title: '给你拍一组生活感照片，换你帮我把自我介绍写得更像我',
     description:
-      '我会拍比较自然的照片，也能做基础修图。希望你不是模板式修改，而是真的帮我梳理一下表达方式。',
+      '我会拍比较自然的照片，也能做基础修图。希望你不是套模板，而是真的帮我把“我是个什么样的人”写顺一点。',
     offer: '生活感拍摄、基础修图',
-    want: '简历优化、表达梳理',
+    want: '自我介绍润色、表达梳理',
     serviceMode: 'BOTH',
   },
   {
@@ -429,10 +457,10 @@ const exchangeTemplates = [
     serviceMode: 'OFFLINE',
   },
   {
-    title: '我帮你把 PPT 做顺眼，换你来帮我跟拍一次线下小活动',
+    title: '我帮你把分享页做顺眼，换你来帮我跟拍一次线下小活动',
     description:
-      '我可以把现有 PPT 调整得更清爽有秩序，希望你愿意帮我记录一次线下活动，不用花哨，但要有现场感。',
-    offer: 'PPT 美化、排版优化',
+      '我可以把现有分享页整理得更清爽有秩序，希望你愿意帮我记录一次线下活动，不用花哨，但要有现场感。',
+    offer: '分享页整理、排版优化',
     want: '活动跟拍、现场记录',
     serviceMode: 'BOTH',
   },
@@ -451,6 +479,22 @@ const exchangeTemplates = [
     offer: '旅行照片修图、色调统一',
     want: '公开表达陪练、反馈建议',
     serviceMode: 'BOTH',
+  },
+  {
+    title: '我帮你把一次普通约会拍得自然一点，换你帮我整理一份城市散步路线',
+    description:
+      '我会尽量把照片拍得像真的发生过，而不是摆拍。希望你熟悉这座城市里适合走、适合停、适合聊的路线。',
+    offer: '自然感拍摄、照片筛选',
+    want: '城市散步路线、在地推荐',
+    serviceMode: 'OFFLINE',
+  },
+  {
+    title: '我帮你把短视频剪得更有情绪，换你陪我练一次公开表达',
+    description:
+      '我比较擅长做节奏、留白和情绪推进，希望你愿意认真听我讲，并帮我把一次想说的话练顺。',
+    offer: '短视频剪辑、节奏调整',
+    want: '表达陪练、内容反馈',
+    serviceMode: 'ONLINE',
   },
 ];
 
@@ -617,10 +661,23 @@ async function main() {
     if (isTask) {
       const template = pick(taskTemplates);
       const budget = randomInt(template.budgetRange[0], template.budgetRange[1]);
+      const hasStoryHook =
+        template.title.includes('电影') ||
+        template.title.includes('生日') ||
+        template.title.includes('打卡') ||
+        template.title.includes('生活') ||
+        template.title.includes('记录') ||
+        template.title.includes('小计划');
       const shouldFeature =
-        budget >= 420 || (budget >= 320 && index % 8 === 0);
+        budget >= 360 || hasStoryHook || (budget >= 260 && index % 6 === 0);
       const featuredPriority =
-        budget >= 480 ? 5 : budget >= 380 ? 4 : shouldFeature ? 3 : 0;
+        budget >= 420
+          ? 5
+          : hasStoryHook && budget >= 280
+            ? 4
+            : shouldFeature
+              ? 3
+              : 0;
       await createListing(`seed_listing_${String(index + 1).padStart(3, '0')}`, publisher.id, {
         listingType: 'TASK',
         title: `${spot.venueName}${template.title}`,

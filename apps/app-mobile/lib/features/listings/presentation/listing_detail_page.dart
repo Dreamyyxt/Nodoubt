@@ -32,6 +32,23 @@ class ListingDetailPage extends StatelessWidget {
               item.listingType == listing.listingType &&
               item.cityCode == listing.cityCode,
         )
+        .toList(growable: false)
+      ..sort((a, b) {
+        final featuredCompare = (b.isFeatured ? 1 : 0).compareTo(
+          a.isFeatured ? 1 : 0,
+        );
+        if (featuredCompare != 0) {
+          return featuredCompare;
+        }
+        final applicationsCompare = b.applicationCount.compareTo(
+          a.applicationCount,
+        );
+        if (applicationsCompare != 0) {
+          return applicationsCompare;
+        }
+        return (b.budgetAmount ?? 0).compareTo(a.budgetAmount ?? 0);
+      });
+    final visibleRelatedListings = relatedListings
         .take(3)
         .toList(growable: false);
 
@@ -240,7 +257,7 @@ class ListingDetailPage extends StatelessWidget {
               ),
             ),
           ),
-          if (relatedListings.isNotEmpty) ...[
+          if (visibleRelatedListings.isNotEmpty) ...[
             const SizedBox(height: 14),
             Card(
               child: Padding(
@@ -255,7 +272,7 @@ class ListingDetailPage extends StatelessWidget {
                       style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 14),
-                    ...relatedListings.map(
+                    ...visibleRelatedListings.map(
                       (item) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: InkWell(
@@ -291,6 +308,16 @@ class ListingDetailPage extends StatelessWidget {
                                         item.locationText ?? _detailCityLabel(item.cityCode),
                                         style: theme.textTheme.bodySmall,
                                       ),
+                                      if (item.isFeatured) ...[
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          '推荐任务',
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: const Color(0xFF4338CA),
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
                                     ],
                                   ),
                                 ),

@@ -73,7 +73,7 @@ class _AppShellPageState extends State<AppShellPage> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.chat_bubble_outline),
                 activeIcon: Icon(Icons.chat_bubble),
-                label: '申请',
+                label: '回应',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.receipt_long_outlined),

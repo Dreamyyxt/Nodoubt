@@ -98,12 +98,12 @@ class ProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    '我的状态',
+                    '我的记录',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '把最关键的信任和进度留在这里，具体操作都进对应页面处理。',
+                    '把最关键的信任、帮助记录和当前进度留在这里，具体操作都进对应页面处理。',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 14),
@@ -179,12 +179,12 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 18),
-            Text('我的工作台', style: Theme.of(context).textTheme.titleMedium),
+            Text('我的任务墙记录', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             _WorkspaceCard(
               icon: Icons.inventory_2_outlined,
               title: '我的发布',
-              description: '当前共 ${controller.myListings.length} 条，继续管理状态和申请。',
+              description: '当前共 ${controller.myListings.length} 条，看看你发起过哪些事、现在推进到哪里。',
               color: const Color(0xFFEDE9FE),
               onTap: () async {
                 final result = await Navigator.of(context).push<bool>(
@@ -200,7 +200,7 @@ class ProfilePage extends StatelessWidget {
             _WorkspaceCard(
               icon: Icons.send_and_archive_outlined,
               title: '我的申请',
-              description: '当前共 ${controller.myApplications.length} 条，看看哪些机会有回应了。',
+              description: '当前共 ${controller.myApplications.length} 条，看看你回应过哪些事、哪些有了反馈。',
               color: const Color(0xFFFFE8DA),
               onTap: () async {
                 final result = await Navigator.of(context).push<bool>(
@@ -216,7 +216,7 @@ class ProfilePage extends StatelessWidget {
             _WorkspaceCard(
               icon: Icons.receipt_long_outlined,
               title: '我的订单',
-              description: '当前共 ${controller.myOrders.length} 条，把合作继续推进到完成。',
+              description: '当前共 ${controller.myOrders.length} 条，把已经接住的事继续推进到完成。',
               color: const Color(0xFFE4F9EC),
               onTap: () async {
                 await Navigator.of(context).push(

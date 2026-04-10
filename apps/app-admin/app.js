@@ -30,6 +30,8 @@ const filters = {
   listingsSearch: "",
   opportunities: "ALL",
   opportunitiesSearch: "",
+  opportunitiesCity: "ALL",
+  opportunitiesBudget: "ALL",
   reportsSearch: "",
   reportsStatus: "ALL",
 };
@@ -66,6 +68,16 @@ document.getElementById("opportunities-filter")?.addEventListener("change", (eve
 
 document.getElementById("opportunities-search")?.addEventListener("input", (event) => {
   filters.opportunitiesSearch = event.target.value.trim().toLowerCase();
+  renderOverview();
+});
+
+document.getElementById("opportunities-city-filter")?.addEventListener("change", (event) => {
+  filters.opportunitiesCity = event.target.value;
+  renderOverview();
+});
+
+document.getElementById("opportunities-budget-filter")?.addEventListener("change", (event) => {
+  filters.opportunitiesBudget = event.target.value;
   renderOverview();
 });
 
@@ -285,10 +297,20 @@ function renderOverview() {
         .join("")
     : emptyBlock("还没有最近流转记录");
 
+  renderOpportunityCityOptions();
+
   const visibleOpportunities = state.opportunities.filter((item) => {
-    if (!filters.opportunitiesSearch) return true;
     const haystack = `${item.title} ${item.publisherName} ${labelCity(item.cityCode || item.publisherCityCode)} ${item.locationText || ""}`.toLowerCase();
-    return haystack.includes(filters.opportunitiesSearch);
+    const searchMatch = !filters.opportunitiesSearch || haystack.includes(filters.opportunitiesSearch);
+    const cityCode = item.cityCode || item.publisherCityCode || "unknown";
+    const cityMatch = filters.opportunitiesCity === "ALL" || cityCode === filters.opportunitiesCity;
+    const budget = Number(item.budgetAmount || 0);
+    const budgetMatch =
+      filters.opportunitiesBudget === "ALL"
+      || (filters.opportunitiesBudget === "HIGH" && budget >= 500)
+      || (filters.opportunitiesBudget === "MID" && budget >= 300 && budget < 500)
+      || (filters.opportunitiesBudget === "LOW" && budget < 300);
+    return searchMatch && cityMatch && budgetMatch;
   });
 
   opportunitiesContainer.innerHTML = visibleOpportunities.length
@@ -333,6 +355,23 @@ function renderOverview() {
 
   document.getElementById("opportunities-count").textContent = `${visibleOpportunities.length} 条`;
   updateOpportunityBulkButtons();
+}
+
+function renderOpportunityCityOptions() {
+  const select = document.getElementById("opportunities-city-filter");
+  if (!(select instanceof HTMLSelectElement)) {
+    return;
+  }
+  const currentValue = filters.opportunitiesCity;
+  const cities = [...new Set(state.opportunities.map((item) => item.cityCode || item.publisherCityCode).filter(Boolean))];
+  select.innerHTML = [
+    '<option value="ALL">全部城市</option>',
+    ...cities
+      .sort((a, b) => labelCity(a).localeCompare(labelCity(b), "zh-CN"))
+      .map((cityCode) => `<option value="${escapeHtml(cityCode)}">${escapeHtml(labelCity(cityCode))}</option>`),
+  ].join("");
+  select.value = cities.includes(currentValue) || currentValue === "ALL" ? currentValue : "ALL";
+  filters.opportunitiesCity = select.value;
 }
 
 function renderListings() {

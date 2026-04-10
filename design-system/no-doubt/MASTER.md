@@ -7,8 +7,8 @@
 ---
 
 **Project:** No Doubt
-**Generated:** 2026-04-07 21:02:05
-**Category:** Marketplace (P2P)
+**Generated:** 2026-04-08 23:08:22
+**Category:** Brewery/Winery
 
 ---
 
@@ -28,14 +28,14 @@
 
 ### Typography
 
-- **Heading Font:** Noto Sans SC
-- **Body Font:** Noto Sans SC
-- **Mood:** chinese, simplified, modern, professional, multilingual, readable
-- **Google Fonts:** [Noto Sans SC + Noto Sans SC](https://fonts.google.com/share?selection.family=Noto+Sans+SC:wght@300;400;500;700)
+- **Heading Font:** Fredoka
+- **Body Font:** Nunito
+- **Mood:** playful, friendly, fun, creative, warm, approachable
+- **Google Fonts:** [Fredoka + Nunito](https://fonts.google.com/share?selection.family=Fredoka:wght@400;500;600;700|Nunito:wght@300;400;500;600;700)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -153,28 +153,28 @@
 
 ## Style Guidelines
 
-**Style:** Vibrant & Block-based
+**Style:** Motion-Driven
 
-**Keywords:** Bold, energetic, playful, block layout, geometric shapes, high color contrast, duotone, modern, energetic
+**Keywords:** Animation-heavy, microinteractions, smooth transitions, scroll effects, parallax, entrance anim, page transitions
 
-**Best For:** Startups, creative agencies, gaming, social media, youth-focused, entertainment, consumer
+**Best For:** Portfolio sites, storytelling platforms, interactive experiences, entertainment apps, creative, SaaS
 
-**Key Effects:** Large sections (48px+ gaps), animated patterns, bold hover (color shift), scroll-snap, large type (32px+), 200-300ms
+**Key Effects:** Scroll anim (Intersection Observer), hover (300-400ms), entrance, parallax (3-5 layers), page transitions
 
 ### Page Pattern
 
-**Pattern Name:** Marketplace / Directory
+**Pattern Name:** Scroll-Triggered Storytelling
 
-- **Conversion Strategy:**  map hover pins,  card carousel, Search bar is the CTA. Reduce friction to search. Popular searches suggestions.
-- **CTA Placement:** Hero Search Bar + Navbar 'List your item'
-- **Section Order:** 1. Hero (Search focused), 2. Categories, 3. Featured Listings, 4. Trust/Safety, 5. CTA (Become a host/seller)
+- **Conversion Strategy:** Narrative increases time-on-page 3x. Use progress indicator. Mobile: simplify animations.
+- **CTA Placement:** End of each chapter (mini) + Final climax CTA
+- **Section Order:** 1. Intro hook, 2. Chapter 1 (problem), 3. Chapter 2 (journey), 4. Chapter 3 (solution), 5. Climax CTA
 
 ---
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Low trust signals
-- ❌ Confusing layout
+- ❌ Generic product pages
+- ❌ No story
 
 ### Additional Forbidden Patterns
 

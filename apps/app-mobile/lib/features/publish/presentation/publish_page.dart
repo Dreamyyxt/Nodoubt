@@ -160,7 +160,7 @@ class _PublishPageState extends State<PublishPage> {
                         const SizedBox(height: 18),
                         Text(
                           isTask
-                              ? '把任务说得\n让人立刻想接。'
+                              ? '把想托付的事\n写得让人想认真帮你。'
                               : '把交换写得\n让人一眼想聊。',
                           style: theme.textTheme.headlineLarge?.copyWith(
                             color: Colors.white,
@@ -170,7 +170,7 @@ class _PublishPageState extends State<PublishPage> {
                         const SizedBox(height: 12),
                         Text(
                           isTask
-                              ? '更鲜明的标题、更明确的预算和服务方式，会让任务显得更靠谱。'
+                              ? '确任不是发杂活的地方。把你真正想完成的那件小事写清楚，才更容易遇到对的人。'
                               : '讲清楚你能提供什么、你想换什么，交换成功率会高很多。',
                           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                         ),
@@ -181,11 +181,11 @@ class _PublishPageState extends State<PublishPage> {
                           children: [
                             _IdeaChip(
                               label: isTask
-                                  ? '明确预算'
+                                  ? '先写画面感'
                                   : '说清互换价值',
                             ),
-                            _IdeaChip(label: '标题更有画面感'),
-                            _IdeaChip(label: '让对方快速判断'),
+                            _IdeaChip(label: '让人快速代入'),
+                            _IdeaChip(label: '像在认真托付'),
                           ],
                         ),
                       ],
@@ -237,7 +237,7 @@ class _PublishPageState extends State<PublishPage> {
             const SizedBox(height: 18),
             _SectionCard(
               title: '一句话抓住人',
-              subtitle: '先把标题和描述写得生动、具体、好判断。',
+              subtitle: '先别像发兼职，把这件事写得像真实生活里的一次认真托付。',
               tint: palette.primarySoft,
               child: Column(
                 children: [
@@ -245,7 +245,7 @@ class _PublishPageState extends State<PublishPage> {
                     controller: _titleController,
                     decoration: const InputDecoration(
                       labelText: '标题',
-                      hintText: '比如：帮我做一版线下活动海报，今晚要初稿',
+                      hintText: '比如：陪我去看展，并帮我拍几张有氛围的照片',
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -260,7 +260,7 @@ class _PublishPageState extends State<PublishPage> {
                     maxLines: 5,
                     decoration: const InputDecoration(
                       labelText: '描述',
-                      hintText: '把需求背景、期望效果、交付时间和注意点说清楚。',
+                      hintText: '写清楚你为什么想做这件事、希望对方怎么帮你、完成后想得到什么感觉。',
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
