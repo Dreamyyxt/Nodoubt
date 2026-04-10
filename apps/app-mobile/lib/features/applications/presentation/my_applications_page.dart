@@ -60,7 +60,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('我的申请'),
+        title: const Text('我的回应'),
         actions: [
           IconButton(
             onPressed: controller.refreshAll,
@@ -79,8 +79,8 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
         child: items.isEmpty
             ? _EmptyState(
                 accent: palette.secondarySoft,
-                title: '还没有出手过',
-                description: '先去首页挑一条让你眼前一亮的任务，发出第一条申请吧。',
+                title: '还没有接住谁的小事',
+                description: '先去任务墙挑一件你愿意回应的事，把第一句回应发出去。',
               )
             : ListView(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -121,7 +121,7 @@ class _MyApplicationsPageState extends State<MyApplicationsPage> {
                   TextField(
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.search_rounded),
-                      hintText: '搜索标题 / 申请说明 / 状态',
+                      hintText: '搜索任务标题 / 回应内容 / 状态',
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -222,13 +222,13 @@ class _ApplicationsHero extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              'Pitch board',
+              'RESPONSE BOARD',
               style: theme.textTheme.bodySmall?.copyWith(color: Colors.white),
             ),
           ),
           const SizedBox(height: 14),
           Text(
-            '把你想接的机会，排成一条有节奏的出击线。',
+            '把你愿意接住的事，排成一条清楚的回应线。',
             style: theme.textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               height: 1.08,
@@ -236,7 +236,7 @@ class _ApplicationsHero extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '待处理的申请会停在前排，已经被接纳的机会则继续向订单推进。',
+            '待回应的停在前排，已经被接住的，会继续走向合作和完成。',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.86),
             ),
@@ -247,7 +247,7 @@ class _ApplicationsHero extends StatelessWidget {
             runSpacing: 10,
             children: [
               _HeroStat(
-                label: '总申请',
+                label: '总回应',
                 value: '$totalCount',
                 tone: Colors.white,
                 background: Colors.white.withValues(alpha: 0.16),
@@ -382,8 +382,8 @@ class _ApplicationCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         item.createdAt == null
-                            ? '刚刚投出的一条申请'
-                            : '投递于 ${_formatDate(item.createdAt!)}',
+                            ? '刚刚发出的一次回应'
+                            : '回应于 ${_formatDate(item.createdAt!)}',
                         style: theme.textTheme.bodySmall,
                       ),
                     ],
@@ -434,8 +434,8 @@ class _ApplicationCard extends StatelessWidget {
                       context: context,
                       builder: (dialogContext) {
                         return AlertDialog(
-                          title: const Text('撤回这条申请？'),
-                          content: const Text('撤回后会退出当前排队，但你之后还能重新申请。'),
+                          title: const Text('撤回这次回应？'),
+                          content: const Text('撤回后会退出当前排队，但你之后还能再次回应。'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -461,7 +461,7 @@ class _ApplicationCard extends StatelessWidget {
                       }
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('申请已撤回。')),
+                        const SnackBar(content: Text('回应已撤回。')),
                       );
                     } catch (error) {
                       if (!context.mounted) {
@@ -474,7 +474,7 @@ class _ApplicationCard extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.undo_rounded),
-                  label: const Text('撤回申请'),
+                  label: const Text('撤回回应'),
                 ),
               ),
             ],

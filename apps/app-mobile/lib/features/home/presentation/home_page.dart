@@ -22,7 +22,14 @@ class HomePage extends StatefulWidget {
 
 enum _HomeViewMode { cards, list }
 
-enum _ListingDiscoveryType { all, task, exchange }
+enum _ListingDiscoveryType {
+  all,
+  companionship,
+  together,
+  lifestyle,
+  kindness,
+  skill,
+}
 
 enum _ListingSortMode { newest, hottest, trusted, budgetHigh }
 
@@ -117,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                   title: '搜索与筛选',
                   subtitle: activeFilterCount == 0
                       ? '先缩小范围，再去看这座城市此刻正在发生什么。'
-                      : '当前已开启 $activeFilterCount 个发现条件。',
+                      : '当前已开启 $activeFilterCount 个任务墙条件。',
                   accent: const Color(0xFFF8FAFC),
                   child: _DiscoveryControlPanel(
                     search: _search,
@@ -326,10 +333,10 @@ class _HomePageState extends State<HomePage> {
       });
     }
 
-    if (_typeFilter == _ListingDiscoveryType.task) {
-      results = results.where((item) => item.listingType == 'TASK');
-    } else if (_typeFilter == _ListingDiscoveryType.exchange) {
-      results = results.where((item) => item.listingType == 'EXCHANGE');
+    if (_typeFilter != _ListingDiscoveryType.all) {
+      results = results.where(
+        (item) => _matchesDiscoveryType(item, _typeFilter),
+      );
     }
 
     if (_serviceModeFilter != null) {
@@ -357,6 +364,46 @@ class _HomePageState extends State<HomePage> {
     });
 
     return sorted;
+  }
+}
+
+bool _matchesDiscoveryType(AppListing item, _ListingDiscoveryType type) {
+  final text = '${item.title} ${item.description} ${item.locationText ?? ''}';
+
+  switch (type) {
+    case _ListingDiscoveryType.all:
+      return true;
+    case _ListingDiscoveryType.companionship:
+      return text.contains('陪') ||
+          text.contains('听我') ||
+          text.contains('晚饭') ||
+          text.contains('看展') ||
+          text.contains('散步');
+    case _ListingDiscoveryType.together:
+      return text.contains('一起') ||
+          text.contains('开始') ||
+          text.contains('周末') ||
+          text.contains('第一次') ||
+          text.contains('逛');
+    case _ListingDiscoveryType.lifestyle:
+      return text.contains('房间') ||
+          text.contains('生活') ||
+          text.contains('生日') ||
+          text.contains('见面') ||
+          text.contains('记录');
+    case _ListingDiscoveryType.kindness:
+      return text.contains('猫') ||
+          text.contains('花') ||
+          text.contains('流浪') ||
+          text.contains('善意') ||
+          text.contains('照看');
+    case _ListingDiscoveryType.skill:
+      return item.listingType == 'EXCHANGE' ||
+          text.contains('拍') ||
+          text.contains('修') ||
+          text.contains('剪') ||
+          text.contains('设计') ||
+          text.contains('写');
   }
 }
 
@@ -724,15 +771,34 @@ class _DiscoveryControlPanel extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   _DiscoveryChip(
-                    label: '任务悬赏',
-                    selected: typeFilter == _ListingDiscoveryType.task,
-                    onTap: () => onTypeChanged(_ListingDiscoveryType.task),
+                    label: '倾听陪伴',
+                    selected: typeFilter == _ListingDiscoveryType.companionship,
+                    onTap: () =>
+                        onTypeChanged(_ListingDiscoveryType.companionship),
                   ),
                   const SizedBox(width: 8),
                   _DiscoveryChip(
-                    label: '技能交换',
-                    selected: typeFilter == _ListingDiscoveryType.exchange,
-                    onTap: () => onTypeChanged(_ListingDiscoveryType.exchange),
+                    label: '一起去做',
+                    selected: typeFilter == _ListingDiscoveryType.together,
+                    onTap: () => onTypeChanged(_ListingDiscoveryType.together),
+                  ),
+                  const SizedBox(width: 8),
+                  _DiscoveryChip(
+                    label: '生活帮忙',
+                    selected: typeFilter == _ListingDiscoveryType.lifestyle,
+                    onTap: () => onTypeChanged(_ListingDiscoveryType.lifestyle),
+                  ),
+                  const SizedBox(width: 8),
+                  _DiscoveryChip(
+                    label: '公益善意',
+                    selected: typeFilter == _ListingDiscoveryType.kindness,
+                    onTap: () => onTypeChanged(_ListingDiscoveryType.kindness),
+                  ),
+                  const SizedBox(width: 8),
+                  _DiscoveryChip(
+                    label: '技能支持',
+                    selected: typeFilter == _ListingDiscoveryType.skill,
+                    onTap: () => onTypeChanged(_ListingDiscoveryType.skill),
                   ),
                   const SizedBox(width: 8),
                   _DiscoveryChip(
@@ -783,7 +849,7 @@ class _DiscoveryControlPanel extends StatelessWidget {
                       ),
                       DropdownMenuItem(
                         value: _ListingSortMode.hottest,
-                        child: Text('最热申请'),
+                        child: Text('最热回应'),
                       ),
                       DropdownMenuItem(
                         value: _ListingSortMode.trusted,
@@ -1091,7 +1157,7 @@ class _FeaturedListingsSection extends StatelessWidget {
                           runSpacing: 10,
                           children: [
                             _MiniMetric(
-                              label: '申请',
+                              label: '回应',
                               value: '${item.applicationCount}',
                               dark: true,
                             ),
@@ -2112,7 +2178,7 @@ class _CardDeckSectionState extends State<_CardDeckSection>
         ),
         const SizedBox(height: 14),
         Text(
-          '左右拖拽当前卡片，像翻 Deck 一样挑机会',
+          '左右拖拽当前卡片，像翻 Deck 一样挑今天想接住的事',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],

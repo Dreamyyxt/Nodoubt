@@ -1,5 +1,13 @@
 enum PublishListingType { task, exchange }
 
+enum PublishTaskCategory {
+  companionship,
+  together,
+  lifestyle,
+  kindness,
+  skill,
+}
+
 enum PublishServiceMode { online, offline, both }
 
 enum PublishBudgetType { fixed, negotiable, freeExchange }
@@ -14,6 +22,7 @@ class CreateListingInput {
     this.longitude,
     this.latitude,
     this.categoryCode,
+    this.taskCategory,
     this.tagIds = const [],
     this.budgetType,
     this.budgetAmount,
@@ -34,6 +43,7 @@ class CreateListingInput {
   final double? longitude;
   final double? latitude;
   final String? categoryCode;
+  final PublishTaskCategory? taskCategory;
   final List<String> tagIds;
   final PublishBudgetType? budgetType;
   final double? budgetAmount;

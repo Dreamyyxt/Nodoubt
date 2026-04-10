@@ -81,7 +81,7 @@ class _ReceivedApplicationsPageState extends State<ReceivedApplicationsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('收到的申请'),
+        title: const Text('收到的回应'),
         actions: [
           IconButton(
             onPressed: _load,
@@ -110,8 +110,8 @@ class _ReceivedApplicationsPageState extends State<ReceivedApplicationsPage> {
                     ? _MessageState(
                         icon: Icons.mark_email_unread_outlined,
                         tone: palette.tertiarySoft,
-                        title: '暂时还没人敲门',
-                        description: '这条发布还没有收到申请，先让它在首页多曝光一会儿。',
+                        title: '暂时还没人接住这件事',
+                        description: '这条发布还没有收到回应，先让它在任务墙多露出一会儿。',
                       )
                     : ListView(
                         padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -123,22 +123,22 @@ class _ReceivedApplicationsPageState extends State<ReceivedApplicationsPage> {
                             runSpacing: 10,
                             children: [
                               _TopFilterChip(
-                                label: '全部 ${_items.length}',
+                              label: '全部 ${_items.length}',
                                 selected: _statusFilter == 'ALL',
                                 onTap: () => setState(() => _statusFilter = 'ALL'),
                               ),
                               _TopFilterChip(
-                                label: '待处理',
+                              label: '待回应',
                                 selected: _statusFilter == 'PENDING',
                                 onTap: () => setState(() => _statusFilter = 'PENDING'),
                               ),
                               _TopFilterChip(
-                                label: '已接受',
+                              label: '已接住',
                                 selected: _statusFilter == 'ACCEPTED',
                                 onTap: () => setState(() => _statusFilter = 'ACCEPTED'),
                               ),
                               _TopFilterChip(
-                                label: '已拒绝',
+                              label: '已谢绝',
                                 selected: _statusFilter == 'REJECTED',
                                 onTap: () => setState(() => _statusFilter = 'REJECTED'),
                               ),
@@ -148,7 +148,7 @@ class _ReceivedApplicationsPageState extends State<ReceivedApplicationsPage> {
                           TextField(
                             decoration: const InputDecoration(
                               prefixIcon: Icon(Icons.search_rounded),
-                              hintText: '搜索申请人 / 留言 / 状态',
+                              hintText: '搜索回应者 / 留言 / 状态',
                             ),
                             onChanged: (value) {
                               setState(() {
@@ -250,10 +250,10 @@ class _ListingHero extends StatelessWidget {
             children: [
               _HeroPill(
                 label: listing.listingType == 'EXCHANGE'
-                    ? '交换模式'
-                    : '任务模式',
+                    ? '交换回应'
+                    : '任务回应',
               ),
-              _HeroPill(label: '$count 条申请'),
+              _HeroPill(label: '$count 条回应'),
             ],
           ),
           const SizedBox(height: 14),
@@ -266,7 +266,7 @@ class _ListingHero extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            '把更匹配的申请留在前排，快速决定谁最适合进入下一步合作。',
+            '把更合适的回应留在前排，快速判断谁最适合进入下一步合作。',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.86),
             ),
@@ -427,7 +427,7 @@ class _ReceivedApplicationCardState extends State<_ReceivedApplicationCard> {
 
       messenger.showSnackBar(
         SnackBar(
-          content: Text(accept ? '申请已接受。下一步可以继续建单。' : '申请已拒绝。'),
+          content: Text(accept ? '回应已接住。下一步可以继续建单。' : '回应已谢绝。'),
         ),
       );
       await widget.onChanged();
@@ -594,7 +594,7 @@ class _ActionArea extends StatelessWidget {
           FilledButton.icon(
             onPressed: isSubmitting ? null : onAccept,
             icon: const Icon(Icons.favorite_rounded),
-            label: Text(isSubmitting ? '处理中...' : '接受申请'),
+            label: Text(isSubmitting ? '处理中...' : '接住回应'),
           ),
           OutlinedButton.icon(
             onPressed: isSubmitting ? null : onReject,
@@ -617,7 +617,7 @@ class _ActionArea extends StatelessWidget {
           children: [
             const Icon(Icons.receipt_long_rounded),
             const SizedBox(width: 12),
-            const Expanded(child: Text('已经匹配成功了，现在把它推进成正式订单。')),
+            const Expanded(child: Text('这次回应已经匹配成功了，现在把它推进成正式订单。')),
             FilledButton.tonal(
               onPressed: isSubmitting ? null : onCreateOrder,
               child: Text(isSubmitting ? '处理中...' : '创建订单'),
@@ -741,11 +741,11 @@ bool _canHandle(String status) => status == 'PENDING';
 String _statusLabel(String status) {
   switch (status) {
     case 'PENDING':
-      return '待处理';
+      return '待回应';
     case 'ACCEPTED':
-      return '已接受';
+      return '已接住';
     case 'REJECTED':
-      return '已拒绝';
+      return '已谢绝';
     default:
       return status;
   }

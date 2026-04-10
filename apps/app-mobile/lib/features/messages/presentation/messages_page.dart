@@ -770,7 +770,7 @@ class _EmptyMessagesState extends StatelessWidget {
               Text('还没有会话', style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
               Text(
-                '先去申请一条任务，或者推进一笔订单，这里就会开始形成合作对话。',
+                '先去回应一件任务，或者推进一笔合作，这里就会开始形成真正的来回记录。',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -821,7 +821,7 @@ class _ConversationItem {
     if (kind == _ConversationKind.order) {
       return '这条会话正在推进真实订单节点，后续会持续记录支付、接单、交付和确认。';
     }
-    return '这条会话从一条申请开始，后续会持续记录反馈、接受结果和建单动作。';
+    return '这条会话从一次回应开始，后续会持续记录反馈、接住结果和建单动作。';
   }
 
   dynamic resolveListing(BuildContext context) {
@@ -860,7 +860,7 @@ List<_ConversationItem> _buildConversations({
       final messages = <_ChatMessage>[
         _ChatMessage(
           kind: _ChatMessageKind.system,
-          content: '你向“${item.listingTitle}”发起了申请，系统会继续同步处理进度。',
+          content: '你向“${item.listingTitle}”发出了一次回应，系统会继续同步处理进度。',
           timestamp: createdAt,
         ),
         if (item.message.trim().isNotEmpty)
@@ -939,26 +939,26 @@ List<_ConversationItem> _buildConversations({
 String _applicationSystemHint(String status) {
   switch (status) {
     case 'PENDING':
-      return '发布者还在查看这条申请，保持在线会更容易接上下一步。';
+      return '发布者还在查看这次回应，保持在线会更容易接上下一步。';
     case 'ACCEPTED':
-      return '你的申请已经被接受，下一步通常会进入建单和推进协作。';
+      return '你的回应已经被接住，下一步通常会进入建单和推进协作。';
     case 'REJECTED':
-      return '这条申请没有被接受，你可以继续挑下一条更合适的机会。';
+      return '这次回应没有被接住，你可以继续挑下一条更合适的事。';
     case 'WITHDRAWN':
-      return '这条申请已经撤回，之后如果合适还可以重新发起。';
+      return '这次回应已经撤回，之后如果合适还可以重新发起。';
     default:
-      return '系统会继续同步这条申请的后续进展。';
+      return '系统会继续同步这次回应的后续进展。';
   }
 }
 
 String _applicationStatusLabel(String status) {
   switch (status) {
     case 'PENDING':
-      return '待处理';
+      return '待回应';
     case 'ACCEPTED':
-      return '已接受';
+      return '已接住';
     case 'REJECTED':
-      return '已拒绝';
+      return '已谢绝';
     case 'WITHDRAWN':
       return '已撤回';
     default:

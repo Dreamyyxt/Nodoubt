@@ -15,10 +15,12 @@ class PublishPage extends StatefulWidget {
     super.key,
     this.initialDraft,
     this.initialListingType,
+    this.initialTaskCategory,
   });
 
   final EditListingArgs? initialDraft;
   final PublishListingType? initialListingType;
+  final PublishTaskCategory? initialTaskCategory;
 
   @override
   State<PublishPage> createState() => _PublishPageState();
@@ -35,6 +37,7 @@ class _PublishPageState extends State<PublishPage> {
   final _cityController = TextEditingController(text: 'shanghai');
 
   PublishListingType _listingType = PublishListingType.task;
+  PublishTaskCategory _taskCategory = PublishTaskCategory.companionship;
   PublishServiceMode _serviceMode = PublishServiceMode.offline;
   PublishBudgetType _budgetType = PublishBudgetType.fixed;
   bool _isUrgent = false;
@@ -71,6 +74,9 @@ class _PublishPageState extends State<PublishPage> {
       if (_listingType == PublishListingType.exchange) {
         _budgetType = PublishBudgetType.freeExchange;
       }
+    }
+    if (widget.initialTaskCategory != null) {
+      _taskCategory = widget.initialTaskCategory!;
     }
   }
 
@@ -195,6 +201,31 @@ class _PublishPageState extends State<PublishPage> {
               ),
             ),
             const SizedBox(height: 18),
+            if (isTask) ...[
+              _SectionCard(
+                title: '先说这是一件什么样的事',
+                subtitle: '先选任务类型，再去写内容，整条发布会更像一件真实发生的城市小事。',
+                tint: palette.primarySoft,
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: PublishTaskCategory.values
+                      .map(
+                        (category) => _TaskCategoryChip(
+                          label: _taskCategoryLabel(category),
+                          selected: _taskCategory == category,
+                          onTap: () {
+                            setState(() {
+                              _taskCategory = category;
+                            });
+                          },
+                        ),
+                      )
+                      .toList(growable: false),
+                ),
+              ),
+              const SizedBox(height: 18),
+            ],
             Row(
               children: [
                 Expanded(
@@ -546,6 +577,11 @@ class _PublishPageState extends State<PublishPage> {
         cityCode: cityCode,
         longitude: geocodedLocation?.longitude ?? defaultCoordinates.longitude,
         latitude: geocodedLocation?.latitude ?? defaultCoordinates.latitude,
+        categoryCode: _listingType == PublishListingType.task
+            ? _taskCategoryCategoryCode(_taskCategory)
+            : null,
+        taskCategory:
+            _listingType == PublishListingType.task ? _taskCategory : null,
         budgetType: _listingType == PublishListingType.task
             ? _budgetType
             : PublishBudgetType.freeExchange,
@@ -790,6 +826,74 @@ class _ExposureTile extends StatelessWidget {
         child: child,
       ),
     );
+  }
+}
+
+class _TaskCategoryChip extends StatelessWidget {
+  const _TaskCategoryChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF111827) : Colors.white,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: selected ? const Color(0xFF111827) : const Color(0xFFE5E7EB),
+          ),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: selected ? Colors.white : const Color(0xFF344054),
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+String _taskCategoryLabel(PublishTaskCategory category) {
+  switch (category) {
+    case PublishTaskCategory.companionship:
+      return '倾听陪伴';
+    case PublishTaskCategory.together:
+      return '一起去做';
+    case PublishTaskCategory.lifestyle:
+      return '生活帮忙';
+    case PublishTaskCategory.kindness:
+      return '公益善意';
+    case PublishTaskCategory.skill:
+      return '技能支持';
+  }
+}
+
+String _taskCategoryCategoryCode(PublishTaskCategory category) {
+  switch (category) {
+    case PublishTaskCategory.companionship:
+      return 'companionship';
+    case PublishTaskCategory.together:
+      return 'together';
+    case PublishTaskCategory.lifestyle:
+      return 'lifestyle';
+    case PublishTaskCategory.kindness:
+      return 'kindness';
+    case PublishTaskCategory.skill:
+      return 'skill';
   }
 }
 
