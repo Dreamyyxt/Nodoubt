@@ -50,7 +50,7 @@ class ProfilePage extends StatelessWidget {
             _ProfileHero(
               nickname: user?.nickname ?? '未登录',
               subtitle: user == null
-                  ? '等待开发登录'
+                  ? '等你开始接住这座城市里的第一件小事'
                   : '${hunterLevel.title} · 信用分 ${user.creditScore ?? 0} · 评分 ${_formatRating(user.ratingAvg)}',
               cityCode: user?.cityCode,
               levelLabel: hunterLevel.title,
@@ -98,12 +98,12 @@ class ProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    '我的记录',
+                    '我的名声与记录',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '把最关键的信任、帮助记录和当前进度留在这里，具体操作都进对应页面处理。',
+                    '这里留住你接住过什么、完成过什么，以及别人为什么愿意继续把事托付给你。',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 14),
@@ -153,25 +153,25 @@ class ProfilePage extends StatelessWidget {
               runSpacing: 12,
               children: [
                 _StatCard(
-                  label: '我的发布',
+                  label: '我发起的事',
                   value: '${controller.myListings.length}',
                   tone: palette.primarySoft,
                   icon: Icons.inventory_2_rounded,
                 ),
                 _StatCard(
-                  label: '进行中',
+                  label: '推进中',
                   value: '$activeListings',
                   tone: palette.tertiarySoft,
                   icon: Icons.bolt_rounded,
                 ),
                 _StatCard(
-                  label: '订单',
+                  label: '合作单',
                   value: '$orderCount',
                   tone: palette.successSoft,
                   icon: Icons.receipt_long_rounded,
                 ),
                 _StatCard(
-                  label: '评价',
+                  label: '收到评价',
                   value: '${user?.ratingCount ?? 0}',
                   tone: const Color(0xFFFFF3C4),
                   icon: Icons.star_rounded,
@@ -179,12 +179,12 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 18),
-            Text('我的任务墙记录', style: Theme.of(context).textTheme.titleMedium),
+            Text('这一路我留下了什么', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             _WorkspaceCard(
               icon: Icons.inventory_2_outlined,
-              title: '我的发布',
-              description: '当前共 ${controller.myListings.length} 条，看看你发起过哪些事、现在推进到哪里。',
+              title: '我发起的事',
+              description: '当前共 ${controller.myListings.length} 条，看看你把哪些小事贴上了任务墙，它们现在推进到哪一步。',
               color: const Color(0xFFEDE9FE),
               onTap: () async {
                 final result = await Navigator.of(context).push<bool>(
@@ -199,8 +199,8 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 12),
             _WorkspaceCard(
               icon: Icons.send_and_archive_outlined,
-              title: '我的申请',
-              description: '当前共 ${controller.myApplications.length} 条，看看你回应过哪些事、哪些有了反馈。',
+              title: '我的回应',
+              description: '当前共 ${controller.myApplications.length} 条，看看你接住过哪些事，哪些已经收到了回音。',
               color: const Color(0xFFFFE8DA),
               onTap: () async {
                 final result = await Navigator.of(context).push<bool>(
@@ -215,8 +215,8 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 12),
             _WorkspaceCard(
               icon: Icons.receipt_long_outlined,
-              title: '我的订单',
-              description: '当前共 ${controller.myOrders.length} 条，把已经接住的事继续推进到完成。',
+              title: '我做成的合作',
+              description: '当前共 ${controller.myOrders.length} 条，把已经接住的事继续推进到完成，让它们真的落地。',
               color: const Color(0xFFE4F9EC),
               onTap: () async {
                 await Navigator.of(context).push(
@@ -241,12 +241,12 @@ class ProfilePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('账号与信任', style: Theme.of(context).textTheme.titleLarge),
+                  Text('我是谁，别人为什么会信我', style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 12),
                   _InfoRow(label: '城市', value: user?.cityCode ?? '未填写'),
                   _InfoRow(label: '平均评分', value: _formatRating(user?.ratingAvg)),
                   _InfoRow(label: '评价次数', value: '${user?.ratingCount ?? 0}'),
-                  _InfoRow(label: '个人简介', value: user?.bio ?? '还没有简介'),
+                  _InfoRow(label: '个人简介', value: user?.bio ?? '还没有留下自我介绍'),
                 ],
               ),
             ),
@@ -258,7 +258,7 @@ class ProfilePage extends StatelessWidget {
                   color: const Color(0xFFFFE2E2),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: Text('最近一次错误：${controller.errorMessage}'),
+                child: Text('最近一次同步异常：${controller.errorMessage}'),
               ),
             ],
           ],
@@ -429,27 +429,27 @@ _HunterLevelViewModel _hunterLevelFromRaw(int? rawLevel) {
   final level = rawLevel ?? 1;
   if (level >= 7) {
     return const _HunterLevelViewModel(
-      title: '大师执行者',
+      title: '大师回应者',
       color: Color(0xFF7C3AED),
       benefits: ['高价任务优先推荐', '门店精选候选', '高信任故事曝光'],
     );
   }
   if (level >= 5) {
     return const _HunterLevelViewModel(
-      title: '黄金执行者',
+      title: '黄金回应者',
       color: Color(0xFFF59E0B),
       benefits: ['优质任务优先可见', '更高推荐权重', '稳定合作标签'],
     );
   }
   if (level >= 3) {
     return const _HunterLevelViewModel(
-      title: '白银执行者',
+      title: '白银回应者',
       color: Color(0xFF64748B),
       benefits: ['更多任务曝光', '建立口碑阶段', '信用开始沉淀'],
     );
   }
   return const _HunterLevelViewModel(
-    title: '青铜执行者',
+    title: '青铜回应者',
     color: Color(0xFFB45309),
     benefits: ['完成首批任务', '建立基础评分', '解锁更多推荐'],
   );
