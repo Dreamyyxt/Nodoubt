@@ -77,28 +77,6 @@ class _HomePageState extends State<HomePage> {
         (_serviceModeFilter != null ? 1 : 0) +
         (_urgentOnly ? 1 : 0) +
         (_sortMode != _ListingSortMode.newest ? 1 : 0);
-    final featuredListings = activeFilterCount == 0
-        ? (listings
-              .where(
-                (item) =>
-                    item.isFeatured &&
-                    (item.featuredUntil == null ||
-                        item.featuredUntil!.isAfter(DateTime.now())),
-              )
-              .toList(growable: false)
-            ..sort((a, b) {
-              final priorityCompare = b.featuredPriority.compareTo(
-                a.featuredPriority,
-              );
-              if (priorityCompare != 0) return priorityCompare;
-              final aUntil = a.featuredUntil?.millisecondsSinceEpoch ?? 0;
-              final bUntil = b.featuredUntil?.millisecondsSinceEpoch ?? 0;
-              return bUntil.compareTo(aUntil);
-            }))
-            .take(6)
-            .toList(growable: false)
-        : const <AppListing>[];
-
     return RefreshIndicator(
       onRefresh: controller.refreshAll,
       child: CustomScrollView(
@@ -118,12 +96,11 @@ class _HomePageState extends State<HomePage> {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 _HomeHero(taskCount: taskCount, exchangeCount: exchangeCount),
-                const SizedBox(height: 18),
                 const SizedBox(height: 22),
                 _SectionPanel(
-                  title: '搜索与筛选',
+                  title: '先缩小范围',
                   subtitle: activeFilterCount == 0
-                      ? '先缩小范围，再去看这座城市此刻正在发生什么。'
+                      ? '先按你想接住的事缩小范围，再去看这座城市此刻正在发生什么。'
                       : '当前已开启 $activeFilterCount 个任务墙条件。',
                   accent: const Color(0xFFF8FAFC),
                   child: _DiscoveryControlPanel(
@@ -175,8 +152,8 @@ class _HomePageState extends State<HomePage> {
                 _SectionPanel(
                   title: '区域热力',
                   subtitle: selectedCluster == null
-                      ? '先点一个城市，再把下面的任务广场切到那个区域。'
-                      : '当前聚焦 ${selectedCluster.label}，下面的任务广场已经切到这个城市。',
+                      ? '先看这座城市哪些地方正在发出任务，再决定你想去哪一片。'
+                      : '当前聚焦 ${selectedCluster.label}，下面的任务墙已经切到这个城市。',
                   accent: const Color(0xFFEEF6FF),
                   child: _RegionHeatSection(
                     clusters: cityClusters,
@@ -198,22 +175,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(height: 22),
-                if (featuredListings.isNotEmpty) ...[
-                  _SectionPanel(
-                    title: '先看这些任务',
-                    subtitle: '它们更有画面感、更值得被拍下来，也更像确任想留下的城市协作。',
-                    accent: const Color(0xFFF4F8FF),
-                    child: _FeaturedListingsSection(listings: featuredListings),
-                  ),
-                  const SizedBox(height: 22),
-                ],
                 _SectionPanel(
                   title: selectedCluster == null
-                      ? '任务广场'
-                      : '${selectedCluster.label} 任务广场',
+                      ? '城市任务墙'
+                      : '${selectedCluster.label} 的任务墙',
                   subtitle: selectedCluster == null
-                      ? '只把最核心的任务和交换留在这里，减少打扰。'
-                      : '你现在看到的，都是 ${selectedCluster.label} 正在发生的任务和交换。',
+                      ? '这里只放城市里正在等待回应的小事，不放多余的东西。'
+                      : '你现在看到的，都是 ${selectedCluster.label} 正在等待被接住的小事。',
                   accent: const Color(0xFFFFFCF2),
                   action: _ViewToggle(
                     value: _viewMode,
@@ -289,8 +257,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 22),
                 _SectionPanel(
-                  title: '本周城市小事',
-                  subtitle: '先看那些最像电影开场、最温柔、也最值得被讲出来的小事。',
+                  title: '城市故事墙',
+                  subtitle: '这里放的是那些最像电影开场、最温柔、也最值得被讲出来的小事。',
                   accent: const Color(0xFFF5F3FF),
                   action: TextButton.icon(
                     onPressed: () {
@@ -416,174 +384,81 @@ class _HomeHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final palette = theme.extension<AppPalette>()!;
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.92, end: 1),
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeOutBack,
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          child: Opacity(opacity: value.clamp(0, 1), child: child),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(26),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(34),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF4F46E5), Color(0xFF6D5DF6), Color(0xFF9277FF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(34),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF4F46E5), Color(0xFF6D5DF6), Color(0xFF9277FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x334F46E5),
+            blurRadius: 28,
+            offset: Offset(0, 18),
           ),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x334F46E5),
-              blurRadius: 28,
-              offset: Offset(0, 18),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(999),
             ),
-          ],
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              right: 8,
-              top: 68,
-              child: Transform.rotate(
-                angle: -0.08,
-                child: _FloatingMiniCard(
-                  icon: Icons.bolt_rounded,
-                  label: '任务火热中',
-                  tint: palette.spotlight.withValues(alpha: 0.95),
-                ),
+            child: Text(
+              'CITY TASK WALL',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.white,
+                letterSpacing: 1.1,
               ),
             ),
-            Positioned(
-              right: 48,
-              bottom: -18,
-              child: Transform.rotate(
-                angle: 0.09,
-                child: _FloatingMiniCard(
-                  icon: Icons.swap_horiz_rounded,
-                  label: '交换更轻松',
-                  tint: Colors.white,
-                  darkText: true,
-                ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            '把一件小事\n认真托付给一个对的人。',
+            style: theme.textTheme.headlineLarge?.copyWith(
+              color: Colors.white,
+              fontSize: 40,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '这里不是找兼职，而是帮你在城市里，找到愿意回应、愿意陪你把这件事做成的人。',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: const Color(0xFFF1F2FF),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: const [
+              _StoryTag(label: '陪我看展'),
+              _StoryTag(label: '一起散步'),
+              _StoryTag(label: '生活帮忙'),
+              _StoryTag(label: '把小事做成'),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              _HeroMetric(label: '任务', value: '$taskCount'),
+              _HeroMetric(label: '交换', value: '$exchangeCount'),
+              _HeroMetric(
+                label: '任务墙',
+                value: _plazaStage(taskCount + exchangeCount),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        'TASK PLAZA',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.white,
-                          letterSpacing: 1.1,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: palette.spotlight.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        Icons.auto_awesome_rounded,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 22),
-                Text(
-                  '把一件小事\n认真托付给一个对的人。',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    color: Colors.white,
-                    fontSize: 42,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  '这里不是找兼职，而是帮你在城市里，找到愿意陪你把这件事做成的人。',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFFF1F2FF),
-                  ),
-                ),
-                const SizedBox(height: 22),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search, color: Colors.white),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          '搜陪伴、搜记录、搜灵感，也搜这座城市刚刚发生的小故事',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-                SizedBox(
-                  height: 40,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: const [
-                      _StoryTag(label: '陪我看展'),
-                      SizedBox(width: 8),
-                      _StoryTag(label: '城市打卡'),
-                      SizedBox(width: 8),
-                      _StoryTag(label: '生活照记录'),
-                      SizedBox(width: 8),
-                      _StoryTag(label: '把小事做成'),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    _HeroMetric(label: '任务', value: '$taskCount'),
-                    _HeroMetric(label: '交换', value: '$exchangeCount'),
-                    _HeroMetric(
-                      label: '广场',
-                      value: _plazaStage(taskCount + exchangeCount),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1024,194 +899,6 @@ class _StoryWallSection extends StatelessWidget {
         itemBuilder: (context, index) => _StoryWallCard(story: stories[index]),
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemCount: stories.length,
-      ),
-    );
-  }
-}
-
-class _FeaturedListingsSection extends StatelessWidget {
-  const _FeaturedListingsSection({required this.listings});
-
-  final List<AppListing> listings;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 262,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: listings.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final item = listings[index];
-          return SizedBox(
-            width: 300,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(24),
-                onTap: () {
-                  Navigator.of(context).push(
-                    _playfulRoute(ListingDetailPage(listing: item)),
-                  );
-                },
-                child: Ink(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF111827), Color(0xFF1F3A8A)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x22111C43),
-                        blurRadius: 24,
-                        offset: Offset(0, 14),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.14),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
-                                item.isUrgent ? '精选 · 加急' : '人工精选',
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            if (item.isFeatured && item.featuredUntil != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.14),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  _featuredRemainingLabel(item.featuredUntil),
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            if (item.budgetAmount != null)
-                              Text(
-                                '¥${item.budgetAmount!.toStringAsFixed(0)}',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: Colors.white,
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Text(
-                          item.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
-                            height: 1.15,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          item.locationText ?? _cityLabel(item.cityCode),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xFFDCE7FF),
-                          ),
-                        ),
-                        if ((item.opsNote ?? '').trim().isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          Text(
-                            item.opsNote!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: const Color(0xFFDBEAFE),
-                              height: 1.35,
-                            ),
-                          ),
-                        ],
-                        const Spacer(),
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: [
-                            _MiniMetric(
-                              label: '回应',
-                              value: '${item.applicationCount}',
-                              dark: true,
-                            ),
-                            _MiniMetric(
-                              label: '优先级',
-                              value: '${item.featuredPriority}',
-                              dark: true,
-                            ),
-                            _MiniMetric(
-                              label: item.orderCount > 0 ? '订单' : '城市',
-                              value: item.orderCount > 0
-                                  ? '${item.orderCount}'
-                                  : _cityLabel(item.cityCode),
-                              dark: true,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _MiniMetric extends StatelessWidget {
-  const _MiniMetric({
-    required this.label,
-    required this.value,
-    this.dark = false,
-  });
-
-  final String label;
-  final String value;
-  final bool dark;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: dark ? Colors.white.withValues(alpha: 0.12) : const Color(0xFFF5F3FF),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        '$label $value',
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: dark ? Colors.white : const Color(0xFF4C1D95),
-        ),
       ),
     );
   }
@@ -2648,52 +2335,6 @@ class _StoryTag extends StatelessWidget {
   }
 }
 
-class _FloatingMiniCard extends StatelessWidget {
-  const _FloatingMiniCard({
-    required this.icon,
-    required this.label,
-    required this.tint,
-    this.darkText = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color tint;
-  final bool darkText;
-
-  @override
-  Widget build(BuildContext context) {
-    final foreground = darkText ? const Color(0xFF1E1B4B) : Colors.white;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: tint,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x22000000),
-            blurRadius: 14,
-            offset: Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: foreground),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: foreground),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _AnimatedLift extends StatefulWidget {
   const _AnimatedLift({required this.child});
 
@@ -2913,21 +2554,6 @@ String _storyBodyFromLabel(_StoryWallCardModel story) {
     default:
       return '每一条任务都不只是一个需求说明，它背后往往都藏着一段具体的城市生活。逛逛内容流的意义，就是把这些生活瞬间收集起来，让确任不只是一套撮合系统。';
   }
-}
-
-String _featuredRemainingLabel(DateTime? featuredUntil) {
-  if (featuredUntil == null) {
-    return '运营推荐';
-  }
-  final remaining = featuredUntil.difference(DateTime.now()).inHours;
-  if (remaining <= 0) {
-    return '今日到期';
-  }
-  if (remaining < 24) {
-    return '${remaining}h 后到期';
-  }
-  final days = (remaining / 24).ceil();
-  return '$days 天推荐期';
 }
 
 String _sceneLabel(AppListing listing) {
